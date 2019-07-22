@@ -37,6 +37,7 @@ CREATE TABLE review (
 	user_id INT NOT NULL,
 	review_content VARCHAR(255),
 	review_rating TINYINT NOT NULL,
+	review_date TIMESTAMP NOT NULL,
 	CONSTRAINT PK_review PRIMARY KEY (review_id),
 	CONSTRAINT FK_review_user FOREIGN KEY (user_id) REFERENCES user (user_id)
 );
@@ -47,6 +48,7 @@ CREATE TABLE comment (
 	review_id INT NOT NULL,
 	film_id INT NOT NULL,
 	comment_content VARCHAR(255),
+	comment_date TIMESTAMP NOT NULL,
 	CONSTRAINT PK_comment PRIMARY KEY (comment_id),
 	CONSTRAINT FK_comment_user FOREIGN KEY (user_id) REFERENCES user (user_id),
 	CONSTRAINT FK_comment_review FOREIGN KEY (review_id) REFERENCES review (review_id)
