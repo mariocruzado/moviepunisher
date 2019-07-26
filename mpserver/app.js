@@ -1,12 +1,20 @@
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+const express = require('express');
+const path = require('path');
+const cookieParser = require('cookie-parser');
+const logger = require('morgan');
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+const app = express();
 
-var app = express();
+//Pre installed 'cors' dependencie
+const cors = require('cors');
+
+//Route requirements
+const authRouter = require('./routes/auth');
+const usersRouter = require('./routes/users');
+const adminRouter = require('./routes/admin');
+const reviewsRouter = require('./routes/review');
+
+app.use(cors());
 
 app.use(logger('dev'));
 app.use(express.json());
@@ -14,7 +22,10 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
+//API routes
+app.use('/api/auth', authRouter);
+app.use('/api/users', usersRouter);
+app.use('/api/admin', adminRouter);
+app.use('/api/reviews', reviewsRouter);
 
 module.exports = app;
