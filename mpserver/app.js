@@ -13,6 +13,7 @@ const authRouter = require('./routes/auth');
 const usersRouter = require('./routes/users');
 const adminRouter = require('./routes/admin');
 const reviewsRouter = require('./routes/review');
+const commentsRouter = require('./routes/comment');
 
 app.use(cors());
 
@@ -27,5 +28,7 @@ app.use('/api/auth', authRouter);
 app.use('/api/users', usersRouter);
 app.use('/api/admin', adminRouter);
 app.use('/api/reviews', reviewsRouter);
+app.use('/api/comments', commentsRouter);
+
 
 module.exports = app;

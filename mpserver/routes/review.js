@@ -16,7 +16,7 @@ router.get('/film/:id', reviewController.getReviewsByFilm);
 router.get('/user/:id', reviewController.getReviewsByUser);
 
 //Add new review
-router.post('/new', reviewController.addReview);
+router.post('/:filmid', reviewController.addReview);
 
 //Delete a review
 router.delete('/:id', reviewController.deleteReview);

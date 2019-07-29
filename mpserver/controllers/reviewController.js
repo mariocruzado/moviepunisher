@@ -63,7 +63,7 @@ controller.getReviewsByFilm = (req, res, _next) => {
         if (result.length > 0) {
           res.send(result);
         } else
-          res.status(404).send({ error: "404", message: "Film Not Found" });
+          res.status(404).send({ error: "404", message: "No Reviews found" });
       })
       .catch(err => {
         res.status(400).send({ error: "400", message: "Bad Request" });
@@ -84,7 +84,9 @@ controller.getReviewsByUser = (req, res, _next) => {
         if (result.length > 0) {
           res.send(result);
         } else
-          res.status(404).send({ error: "404", message: "No Reviews From This User" });
+          res
+            .status(404)
+            .send({ error: "404", message: "No Reviews From This User" });
       })
       .catch(err => {
         res.status(400).send({ error: "400", message: "Bad Request" });
@@ -103,7 +105,7 @@ controller.addReview = (req, res, _next) => {
       req.body &&
       ch.checkReviewTitle(req.body.title) &&
       ch.checkReviewRating(req.body.rating) &&
-      !isNaN(req.body.film_id)
+      !isNaN(req.params.filmid)
     ) {
       model
         .checkifUserReviewed(vToken.id, req.body.film_id)
@@ -111,11 +113,11 @@ controller.addReview = (req, res, _next) => {
           if (result.length > 0) {
             res.status(409).send({
               error: 409,
-              message: "Another previos review exists for this film"
+              message: "Another previous review exists for this film"
             });
           } else {
             const objR = {
-              film_id: req.body.film_id,
+              film_id: req.params.filmid,
               user_id: vToken.id,
               title: req.body.title,
               ...(req.body.content &&
@@ -207,13 +209,19 @@ controller.editReview = (req, res, _next) => {
                 }),
               modifiedby: vToken.id
             };
-            model.editReview(objR, req.params.id).then(result => {
-              model.getReviewById(req.params.id)
-                .then(result => res.send(result[0]))
-                .catch(err => {
-                  throw err;
-                })
-            });
+            model
+              .editReview(objR, req.params.id)
+              .then(result => {
+                model
+                  .getReviewById(req.params.id)
+                  .then(result => res.send(result[0]))
+                  .catch(err => {
+                    throw err;
+                  });
+              })
+              .catch(err =>
+                res.status(400).send({ error: 400, message: "Bad Request" })
+              );
           } else res.status(401).send({ error: 401, message: "Unauthorized" });
         } else
           res.status(404).send({ error: 404, message: "Review Not Found" });

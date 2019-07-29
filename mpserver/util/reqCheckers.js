@@ -10,8 +10,7 @@ checker.checkPassword = pass => {
 
 checker.checkUserName = name => {
   let res = false;
-  if (name.length > 5 && name.length < 40 && !name.includes("."))
-    res = true;
+  if (name.length > 5 && name.length < 40 && !name.includes(".")) res = true;
 
   return res;
 };
@@ -36,22 +35,30 @@ checker.checkProfileId = id => {
 };
 
 //Reviews Fields
-checker.checkReviewContent = (content) => {
+checker.checkReviewContent = content => {
   let res = false;
   if (content.length < 600) res = true;
   return res;
-}
+};
 
-checker.checkReviewTitle = (title) => {
+checker.checkReviewTitle = title => {
   let res = false;
   if (title.length > 6 && title.length < 100) res = true;
   return res;
-}
+};
 
-checker.checkReviewRating = (rating) => {
+checker.checkReviewRating = rating => {
   let res = false;
   if (!isNaN(rating) && rating > 0 && rating <= 5) res = true;
   return res;
-}
+};
+
+//Comment Fields
+
+checker.checkComment = content => {
+  let res = false;
+  if (content.length > 20 && content.length < 255) res = true;
+  return res;
+};
 
 module.exports = checker;

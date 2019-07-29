@@ -51,7 +51,7 @@ controller.register = (req, res, _next) => {
       } else throw err;
     } else throw err;
   } catch (e) {
-    res.status(400).send({ error: 400, message: "Invalid Data" });
+    res.status(400).send({ error: 400, message: "Bad Request" });
   }
 };
 
@@ -95,9 +95,9 @@ controller.edit = (req, res, _next) => {
             .status(400)
             .send({ error: 400, message: "Invalid Data/User Not Found" });
       });
-    } else throw err;
+    } else res.status(401).send({ error: 401, message: 'Unauthorized '});
   } catch (e) {
-    res.status(401).send({ error: 400, message: "Bad Request" });
+    res.status(400).send({ error: 400, message: "Bad Request" });
   }
 };
 
