@@ -38,7 +38,7 @@ controller.login = (req, res, _next) => {
             }
 
         } else {
-            res.status(400).send({ error: 400, message: 'Invalid Credentials' });
+            res.status(401).send({ error: 401, message: 'Invalid Credentials' });
 
         }
     })

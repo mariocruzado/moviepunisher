@@ -27,7 +27,7 @@ controller.add = (req, res, _next) => {
           model.findCommentById(commentId).then(result => res.send(result[0]));
         })
         .catch(err => {
-          res.status(400).send({ error: 400, message: 'Bad Request'});
+          res.status(400).send({ error: 400, message: "Bad Request" });
         });
     } else res.status(400).send({ error: 400, message: "Bad Request" });
   } catch {

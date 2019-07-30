@@ -1,0 +1,18 @@
+import { ActionCreator } from 'redux';
+import { TAction } from './actionTypes';
+
+
+export const setToken: ActionCreator<TAction> = (newToken: string) => ({
+    type:'SET_TOKEN',
+    newToken
+})
+
+export const setLoginExpiration: ActionCreator<TAction> = (expirationId: number) => ({
+    type:'SET_LOGINEXPIRE',
+    expirationId
+});
+
+export const saveLastFilms: ActionCreator<TAction> = (storedFilms:any[]) => ({
+    type:'SAVE_LASTFILMS',
+    storedFilms
+});
