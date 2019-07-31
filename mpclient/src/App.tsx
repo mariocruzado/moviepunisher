@@ -23,7 +23,9 @@ import Login from './components/Login';
 
 //Router
 import { connect } from 'react-redux';
-import { BrowserRouter } from 'react-router-dom';
+import { BrowserRouter, Route } from 'react-router-dom';
+import Register from './components/Register';
+import Root from './components/Root';
 
 const { Modal, Button } = require('react-materialize');
 
@@ -68,18 +70,10 @@ const App: React.FC<IPropsGlobal> = (props) => {
 
   return (
     <BrowserRouter>
-    {!props.token && <Login />}
+    {!props.token && <Root />}
     {props.token && <Layout />}
     </BrowserRouter>
   )
-  return (
-    <div>
-      <Modal header="Hey!" trigger={<Button>Click here buddy</Button>}>
-<p>Restrospecter</p>
-
-      </Modal>
-    </div>
-  );
 }
 
 const mapStateToProps = (globalState:IGlobalState) => ({

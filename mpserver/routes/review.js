@@ -24,4 +24,7 @@ router.delete('/:id', reviewController.deleteReview);
 //Edit a review
 router.put('/:id', reviewController.editReview);
 
+//Get average rating and number of reviews from a film
+router.post('/film/avg', reviewController.getReviewsAndAverage);
+
 module.exports = router;

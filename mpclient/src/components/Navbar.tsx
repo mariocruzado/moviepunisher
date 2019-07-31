@@ -9,17 +9,19 @@ import jwt from 'jsonwebtoken';
 //Enabling Emotion
 /** @jsx jsx */
 import { css, jsx } from '@emotion/core';
+import { Link } from 'react-router-dom';
 
 interface IPropsGlobal {
   token: string;
   expirationId: number;
 
-  setToken: (token: string) => void;
+  reset:() => void;
 }
 
 const Navbar: React.FC<IPropsGlobal & RouteComponentProps<any>> = props => {
+  
     const logOut = () => {
-        props.setToken('');
+        props.reset();
         localStorage.removeItem('token');
         window.clearTimeout(props.expirationId);
         props.history.push('/');
@@ -33,17 +35,25 @@ const Navbar: React.FC<IPropsGlobal & RouteComponentProps<any>> = props => {
         return null;
     }
 
+    const userAvatar = () => {
+      const dToken = jwt.decode(props.token);
+      if (dToken !== null && typeof dToken !== 'string') {
+        return dToken.avatar;
+    }
+    return null;  
+    }
+    
     return (
     <nav
       className="navbar is-dark"
-      css={css`box-shadow:5px 5px 5px rgba(0,0,0,0.5) !important;width:100% !important;position:fixed !important;z-index:100;`}
+      css={css`box-shadow:0px 5px 5px rgba(0,0,0,0.5) !important;position:fixed;top:0px;width:100% !important;`}
       role="navigation"
       aria-label="main navigation"
     >
       <div className="navbar-brand">
         <a className="navbar-item" href="/">
           <img
-            src="https://image.shutterstock.com/image-vector/cinema-alphabet-neon-sign-set-260nw-1074350261.jpg"
+            src="https://logodix.com/logo/280318.png"
             width="112"
             height="28"
           />
@@ -64,9 +74,7 @@ const Navbar: React.FC<IPropsGlobal & RouteComponentProps<any>> = props => {
 
       <div id="navbarBasicExample" className="navbar-menu">
         <div className="navbar-start">
-          <a className="navbar-item">Home</a>
-
-          <a className="navbar-item">Documentation</a>
+          <Link className="navbar-item" to={'/'}>Home</Link>
 
           <div className="navbar-item has-dropdown is-hoverable">
             <a className="navbar-link">More</a>
@@ -84,13 +92,16 @@ const Navbar: React.FC<IPropsGlobal & RouteComponentProps<any>> = props => {
         <div className="navbar-end">
           <div className="navbar-item">
             <span>
-              Welcome <b>{currentUser()}</b>
+              {} <b>{currentUser()}</b>
             </span>
           </div>
           <div className="navbar-item">
             <div className="buttons">
-              <a className="button is-light" onClick={logOut}>
-                Log Out
+              <a className="button is-primary" onClick={logOut}>
+              <i className="fas fa-user-edit"></i>
+              </a>
+              <a className="button is-danger" onClick={logOut}>
+              <i className="fas fa-power-off"></i>
               </a>
             </div>
           </div>
@@ -106,7 +117,7 @@ const mapStateToProps = (globalState: IGlobalState) => ({
 });
 
 const mapDispatchToProps = {
-  setToken: actions.setToken
+  reset: actions.reset
 };
 
 export default connect(

@@ -18,4 +18,7 @@ router.get('/', userController.getAll);
 //Delete User
 router.delete('/:id', userController.deleteUser);
 
+//Get profiles
+router.get('/all/profiles', userController.getProfiles);
+
 module.exports = router;

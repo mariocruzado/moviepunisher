@@ -13,6 +13,7 @@ import { connect } from 'react-redux';
 //Field checker
 import '../tools/fieldChecker';
 import { usernameChecker, passwordChecker } from '../tools/fieldChecker';
+import { Link } from 'react-router-dom';
 
 interface IPropsGlobal {
     expirationId: number;
@@ -75,10 +76,7 @@ const Login:React.FC<IPropsGlobal> = (props) => {
 
     //Rendering component
     return (
-        <section className="hero is-info is-fullheight">
-        <div className="hero-body">
-          <div className="container">
-            <div className="columns is-centered">
+
               <div className="column is-5-tablet is-4-desktop is-3-widescreen">
                 <div className="box" css={css`box-shadow:7px 7px 5px rgba(0,0,0,0.5) !important;`}>
                   <div className="field is-vcentered">
@@ -128,7 +126,8 @@ const Login:React.FC<IPropsGlobal> = (props) => {
                       </small>
                     </div>
                   )}
-                  <div className="field">
+                  <div className="field columns">
+                    <div className="column is-4">
                     <button
                       className="button is-link"
                       onClick={auth}
@@ -137,13 +136,18 @@ const Login:React.FC<IPropsGlobal> = (props) => {
                     >
                       Login
                     </button>
+                    </div>
+                    <div className="column is-8 has-text-right">
+                    <Link
+                      className="is-size-7"
+                      to={`/register`}
+                    >
+                      New User? Register now!
+                    </Link>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          </div>
-        </div>
-      </section>
     );
 }
 

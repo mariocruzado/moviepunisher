@@ -33,17 +33,21 @@ FROM review
 INNER JOIN user ON user.id = review.user_id 
 INNER JOIN profile ON profile.id = user.profile_id`;
 
+//Get data from view to get number of reviews and average rating
+const SQL_reviews_avg = (filmsids) =>
+  `SELECT * FROM moviepunisher.movies_reviews WHERE film_id IN (${filmsids})`;
+
 //Add new review
 const SQL_addReview = () => `INSERT INTO review SET ?`;
 
 //Delete a review
-const SQL_deleteReview = () => `DELETE FROM review WHERE id = ?`
+const SQL_deleteReview = () => `DELETE FROM review WHERE id = ?`;
 
 //Delete comments from a review
-const SQL_deleteComments = () => `DELETE FROM comment WHERE review_id = ?`
+const SQL_deleteComments = () => `DELETE FROM comment WHERE review_id = ?`;
 
 //Edit a review
-const SQL_editReview = () => `UPDATE review SET ? WHERE id = ?`
+const SQL_editReview = () => `UPDATE review SET ? WHERE id = ?`;
 
 model.getReviewsByFilm = film_id => {
   return new Promise((resolve, reject) => {
@@ -91,38 +95,52 @@ model.addReview = data => {
 };
 
 model.checkifUserReviewed = (user_id, film_id) => {
-    return new Promise((resolve, reject) => {
-        dbConn.query(SQL_checkIfUserReviewed(), [user_id, film_id], (err, result) => {
-          if (err) reject(err);
-          else resolve(result);
-        });
-      });
-}
+  return new Promise((resolve, reject) => {
+    dbConn.query(
+      SQL_checkIfUserReviewed(),
+      [user_id, film_id],
+      (err, result) => {
+        if (err) reject(err);
+        else resolve(result);
+      }
+    );
+  });
+};
 
-model.deleteReview = (id) => {
-    return new Promise((resolve, reject) => {
-        dbConn.query(SQL_deleteReview(), [id], (err, result) => {
-          if (err) reject(err);
-          else resolve(result);
-        });
-      });
-}
+model.deleteReview = id => {
+  return new Promise((resolve, reject) => {
+    dbConn.query(SQL_deleteReview(), [id], (err, result) => {
+      if (err) reject(err);
+      else resolve(result);
+    });
+  });
+};
 
-model.deleteReviewComments = (review_id) => {
-    return new Promise((resolve, reject) => {
-        dbConn.query(SQL_deleteComments(), [review_id], (err, result) => {
-          if (err) reject(err);
-          else resolve(result);
-        });
-      });
-}
+model.deleteReviewComments = review_id => {
+  return new Promise((resolve, reject) => {
+    dbConn.query(SQL_deleteComments(), [review_id], (err, result) => {
+      if (err) reject(err);
+      else resolve(result);
+    });
+  });
+};
 
 model.editReview = (reviewObj, id) => {
-    return new Promise((resolve, reject) => {
-        dbConn.query(SQL_editReview(), [reviewObj, id], (err, result) => {
-          if (err) reject(err);
-          else resolve(result);
-        });
-      });  
-}
+  return new Promise((resolve, reject) => {
+    dbConn.query(SQL_editReview(), [reviewObj, id], (err, result) => {
+      if (err) reject(err);
+      else resolve(result);
+    });
+  });
+};
+
+model.reviewsAverage = films => {
+  return new Promise((resolve, reject) => {
+    dbConn.query(SQL_reviews_avg(films), (err, result) => {
+      if (err) reject(err);
+      else resolve(result);
+    });
+  });
+};
+
 module.exports = model;

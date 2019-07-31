@@ -41,6 +41,9 @@ const SQL_deleteComments = () => `DELETE FROM comment WHERE user_id = ?`;
 //Delete rewards associated to user
 const SQL_deleteRewards = () => `DELETE FROM reward WHERE user_id = ?`;
 
+//Get profiles
+const SQL_profiles = () => `SELECT * FROM profile`
+
 //Check if user already exists
 model.checkUser = userObj => {
   return new Promise((resolve, reject) => {
@@ -144,4 +147,13 @@ model.deleteRewards = user_id => {
   });
 };
 
+//Get profiles
+model.getProfiles = () => {
+  return new Promise((resolve, reject) => {
+    dbConn.query(SQL_profiles(), (err, result) => {
+      if (err) reject(err);
+      else resolve(result);
+    });
+  });  
+}
 module.exports = model;

@@ -63,3 +63,16 @@ CREATE TABLE reward (
 	CONSTRAINT PK_reward PRIMARY KEY (id),
 	CONSTRAINT FK_user_reward FOREIGN KEY (user_id) REFERENCES user (id)
 );
+
+CREATE 
+    ALGORITHM = UNDEFINED 
+    DEFINER = `root`@`localhost` 
+    SQL SECURITY DEFINER
+VIEW `movies_reviews` AS
+    SELECT 
+        `review`.`film_id` AS `film_id`,
+        COUNT(0) AS `nReviews`,
+        AVG(`review`.`rating`) AS `average`
+    FROM
+        `review`
+    GROUP BY `review`.`film_id`

@@ -16,3 +16,7 @@ export const saveLastFilms: ActionCreator<TAction> = (storedFilms:any[]) => ({
     type:'SAVE_LASTFILMS',
     storedFilms
 });
+
+export const reset: ActionCreator<TAction> = () => ({
+    type: 'RESET'
+});

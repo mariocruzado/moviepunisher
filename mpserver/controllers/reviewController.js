@@ -227,7 +227,33 @@ controller.editReview = (req, res, _next) => {
           res.status(404).send({ error: 404, message: "Review Not Found" });
       });
     }
-  } catch {}
+  } catch {
+    res.status(401).send("Unauthorized");
+  }
 };
 
+controller.getReviewsAndAverage = (req, res, _next) => {
+  const token = req.headers.authorization.split(" ")[1];
+  try {
+    const vToken = jwt.verify(token, jwtSecret);
+
+    const body = req.body.toString();
+    const body2 = body.replace("[", "(");
+    const body3 = body2.replace("]", ")");
+
+    console.log(body3);
+
+    model
+      .reviewsAverage(body3)
+      .then(result => {
+        console.log(result);
+        res.send(result);
+      })
+      .catch(err => {
+        throw err;
+      });
+  } catch {
+    res.status(401).send("Unauthorized");
+  }
+};
 module.exports = controller;

@@ -174,4 +174,12 @@ controller.deleteUser = (req, res, _next) => {
   }
 };
 
+//Get profiles 
+controller.getProfiles = (req, res, _next) => {
+  model.getProfiles()
+  .then(result => {
+    res.send(result)
+  })
+  .catch((err) => { console.log(err) });
+}
 module.exports = controller;

@@ -12,4 +12,8 @@ type TSaveLastFilms = {
     storedFilms:any[];
 }
 
-export type TAction = TSetToken | TSetLoginExpire | TSaveLastFilms;
+type TReset = {
+    type: 'RESET';
+}
+
+export type TAction = TSetToken | TSetLoginExpire | TSaveLastFilms | TReset;

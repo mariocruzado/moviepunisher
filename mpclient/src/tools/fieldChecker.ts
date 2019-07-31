@@ -11,3 +11,18 @@ export const passwordChecker = (pass: string) => {
 
   return res;
 };
+
+export const emailChecker = (email: string) => {
+  let res = false;
+  if (
+    email.includes("@") &&
+    email.includes(".") &&
+    email.length > 5 &&
+    email.length < 120
+    && !email.includes(' ') &&
+    email.split('.')[1]
+  ) {
+    res = true;
+  }
+  return res;
+};
