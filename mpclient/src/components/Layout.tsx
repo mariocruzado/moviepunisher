@@ -9,8 +9,6 @@ return (
     <BrowserRouter>
     <Route component={Navbar} />
     <Main></Main>
-
-
     </BrowserRouter>
 );
 }

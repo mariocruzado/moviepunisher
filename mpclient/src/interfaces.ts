@@ -3,7 +3,11 @@ export interface IFilm {
     poster_path: string;
     release_date: string;
     original_language: string;
+    backdrop_path:string;
+    average:number;
+    nReviews:number;
     id:number;
+    overview:string;
 }
 
 export interface IUser {

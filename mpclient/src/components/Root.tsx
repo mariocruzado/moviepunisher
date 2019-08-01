@@ -1,5 +1,5 @@
 import React from "react";
-import { Switch, Route } from "react-router-dom";
+import { Switch, Route, Redirect } from 'react-router-dom';
 import Login from "./Login";
 import Register from "./Register";
 
@@ -12,6 +12,7 @@ const Root: React.FC<any> = () => {
             <Switch>
               <Route path="/" exact component={Login} />
               <Route path="/register" exact component={Register} />
+              <Redirect to='/' />
             </Switch>
           </div>
         </div>

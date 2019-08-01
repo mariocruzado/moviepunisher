@@ -96,6 +96,30 @@ controller.getReviewsByUser = (req, res, _next) => {
   }
 };
 
+//Check if user reviewed the film
+controller.checkIfReviewed = (req, res, _next) => {
+  const token = req.headers.authorization.split(" ")[1];
+  try {
+    const vToken = jwt.verify(token, jwtSecret);
+    if (req.params.film_id) {
+      model.checkifUserReviewed(vToken.id, req.params.film_id)
+      .then(result => {
+        if (result.length > 0) {
+          res.status(409).send({
+            error: 409,
+            message: "Another previous review exists for this film"
+          });
+        } else {
+          res.send(result);
+        }
+      });
+    } else res.status(400).send({ error: 400, message: "Bad Request" });
+  } catch {
+    res.status(401).send({ error: 401, message: "Unauthorized" });
+  }
+};
+//Add Review
+
 controller.addReview = (req, res, _next) => {
   const token = req.headers.authorization.split(" ")[1];
 
@@ -108,7 +132,7 @@ controller.addReview = (req, res, _next) => {
       !isNaN(req.params.filmid)
     ) {
       model
-        .checkifUserReviewed(vToken.id, req.body.film_id)
+        .checkifUserReviewed(vToken.id, req.params.film_id)
         .then(result => {
           if (result.length > 0) {
             res.status(409).send({
