@@ -4,41 +4,45 @@ import { connect } from "react-redux";
 
 import * as actions from "../actions";
 import { RouteComponentProps } from "react-router";
-import jwt from 'jsonwebtoken';
+import jwt from "jsonwebtoken";
 
 //Enabling Emotion
 /** @jsx jsx */
-import { css, jsx } from '@emotion/core';
-import { Link } from 'react-router-dom';
+import { css, jsx } from "@emotion/core";
+import { Link } from "react-router-dom";
 
 interface IPropsGlobal {
   token: string;
   expirationId: number;
 
-  reset:() => void;
+  reset: () => void;
 }
 
 const Navbar: React.FC<IPropsGlobal & RouteComponentProps<any>> = props => {
-  
-    const logOut = () => {
-        props.reset();
-        localStorage.removeItem('token');
-        window.clearTimeout(props.expirationId);
-        props.history.push('/');
-    }
+  const logOut = () => {
+    props.reset();
+    localStorage.removeItem("token");
+    window.clearTimeout(props.expirationId);
+    props.history.push("/");
+  };
 
-    const currentUser = () => {
-        const dToken = jwt.decode(props.token);
-        if (dToken !== null && typeof dToken !== 'string') {
-            return dToken.username;
-        }
-        return null;
+  const currentUser = () => {
+    const dToken = jwt.decode(props.token);
+    if (dToken !== null && typeof dToken !== "string") {
+      return dToken.username;
     }
-    
-    return (
+    return null;
+  };
+
+  return (
     <nav
       className="navbar is-dark"
-      css={css`box-shadow:0px 5px 5px rgba(0,0,0,0.5) !important;position:fixed;top:0px;width:100% !important;`}
+      css={css`
+        box-shadow: 0px 5px 5px rgba(0, 0, 0, 0.5) !important;
+        position: fixed;
+        top: 0px;
+        width: 100% !important;
+      `}
       role="navigation"
       aria-label="main navigation"
     >
@@ -65,7 +69,6 @@ const Navbar: React.FC<IPropsGlobal & RouteComponentProps<any>> = props => {
       </div>
 
       <div id="navbarBasicExample" className="navbar-menu">
-
         <div className="navbar-end">
           <div className="navbar-item">
             <span>
@@ -75,10 +78,10 @@ const Navbar: React.FC<IPropsGlobal & RouteComponentProps<any>> = props => {
           <div className="navbar-item">
             <div className="buttons">
               <a className="button is-primary" onClick={logOut}>
-              <i className="fas fa-user-edit"></i>
+                <i className="fas fa-user-edit" />
               </a>
               <a className="button is-danger" onClick={logOut}>
-              <i className="fas fa-power-off"></i>
+                <i className="fas fa-power-off" />
               </a>
             </div>
           </div>

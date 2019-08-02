@@ -9,10 +9,8 @@ const controller = {};
 
 controller.add = (req, res, _next) => {
   const token = req.headers.authorization.split(" ")[1];
-
   try {
     const vToken = jwt.verify(token, jwtSecret);
-    ch.checkComment(req.body.comment);
     if (req.body && ch.checkComment(req.body.comment)) {
       const objC = {
         review_id: req.params.reviewid,

@@ -26,3 +26,21 @@ export const emailChecker = (email: string) => {
   }
   return res;
 };
+
+export const commentChecker = (comment:string) => {
+  let res = true;
+  if (comment.length < 1 || comment.length > 200) res = false;
+  return res;
+}
+
+export const reviewContentChecker = (content:string) => {
+  let res = false;
+  if (content.length >= 100 && content.length <= 500) res = true;
+  return res;
+}
+
+export const reviewTitleChecker = (title:string) => {
+  let res = false;
+  if (title.length >= 2 && title.length <= 50) res = true;
+  return res;
+}

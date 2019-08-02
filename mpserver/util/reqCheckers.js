@@ -57,7 +57,7 @@ checker.checkReviewRating = rating => {
 
 checker.checkComment = content => {
   let res = false;
-  if (content.length > 20 && content.length < 255) res = true;
+  if (content.length > 2 && content.length < 255) res = true;
   return res;
 };
 

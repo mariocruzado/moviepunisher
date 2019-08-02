@@ -11,6 +11,6 @@ router.get('/user/:userid', commentController.byUserId);
 
 router.delete('/:id', commentController.delete);
 
-router.post('/:reviewid', commentController.add);
+router.post('/new/:reviewid', commentController.add);
 
 module.exports = router;

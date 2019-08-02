@@ -32,22 +32,30 @@ const FilmDetails: React.FC<any> = props => {
     fetch(`${apiUrl}&${apiKey}`, {
       method: "GET",
       headers: { "Content-Type": "application/json" }
-    }).then(response => {
-      if (response.ok) {
-        response.json().then((film: any) => {
-          setFilm(film);
-          console.log(film);
-        });
-      }
-    });
+    })
+      .then(response => {
+        if (response.ok) {
+          response.json().then((film: any) => {
+            setFilm(film);
+            console.log(film);
+          });
+        }
+      })
+      .catch(e => console.log("Angel " + e));
   };
 
-  React.useMemo(() => getFilmData(props.film_id), [props.film_id]);
+  React.useEffect(() => getFilmData(props.film_id), [props.film_id]);
 
   const headerImg = "https://image.tmdb.org/t/p/original/";
   if (!film) return null;
   return (
-    <div className="card" css={css`border-radius:10px;background-color:rgba(255,255,255,0.8) !important;`}>
+    <div
+      className="card"
+      css={css`
+        border-radius: 10px;
+        background-color: rgba(255, 255, 255, 0.8) !important;
+      `}
+    >
       {film.backdrop_path && (
         <div className="card-image">
           <figure className="image is-16by9">
@@ -76,19 +84,28 @@ const FilmDetails: React.FC<any> = props => {
                   />
                 </figure>
               </div>
-              <div className="column is-8 is-mobile" css={css`border-radius:5px;`}>
-                <p className="title is-4">
-                  {film.original_title} ({film.release_date.split('-')[0]})
-                  <h6 className="subtitle is-size-6">
+              <div
+                className="column is-8 is-mobile"
+                css={css`
+                  border-radius: 5px;
+                `}
+              >
+                <div>
+                  <span className="title is-4 is-block">
+                  {film.original_title} ({film.release_date.split("-")[0]})
+                  </span>
+                  <span className="subtitle is-size-6 is-block">
                     <i>{film.tagline}</i>
-                  </h6>
+                  </span>
+                  </div>
+                  <div className="is-block">
                   {film.genres.map((g: any) => (
                     <span
                       css={css`
                         margin-right: 5px;
                         padding: 5px;
                         border-radius: 10px;
-                        font-size: 0.5em !important;
+                        font-size: 0.7em !important;
                       `}
                       className="has-background-success has-text-white"
                       key={g.id}
@@ -96,7 +113,7 @@ const FilmDetails: React.FC<any> = props => {
                       {g.name}
                     </span>
                   ))}
-                </p>
+                  </div>
 
                 <div className="columns">
                   <div className="column">
@@ -111,9 +128,11 @@ const FilmDetails: React.FC<any> = props => {
                     <p className="subtitle is-6">Languages:</p>
                   </div>
                   <div className="column">
-                    <p className="subtitle is-6">{film.spoken_languages.map((sl:any, j:number) => (
-                        <span key={`${sl.name}${j}`}>{sl.name}{' '}</span>
-                    ))}</p>
+                    <p className="subtitle is-6">
+                      {film.spoken_languages.map((sl: any, j: number) => (
+                        <span key={`${sl.name}${j}`}>{sl.name} </span>
+                      ))}
+                    </p>
                   </div>
                 </div>
                 <div className="columns">

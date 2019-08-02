@@ -63,13 +63,15 @@ const Register: React.FC<IPropsGlobal & RouteComponentProps> = props => {
       headers: {
         "Content-Type": "application/json"
       }
-    }).then(response => {
-      if (response.ok) {
-        response.json().then((profiles: any) => {
-          saveProfiles(profiles);
-        });
-      }
-    });
+    })
+      .then(response => {
+        if (response.ok) {
+          response.json().then((profiles: any) => {
+            saveProfiles(profiles);
+          });
+        }
+      })
+      .catch(e => console.log("Angel " + e));
   };
 
   React.useEffect(getProfiles, []);
@@ -88,16 +90,18 @@ const Register: React.FC<IPropsGlobal & RouteComponentProps> = props => {
           "Content-Type": "application/json"
         },
         body: JSON.stringify(newUser)
-      }).then(response => {
-        if (response.ok) {
-          response.json().then((user: IUser) => {
-            props.history.push(`/`);
-            alert("User created successfully! Log in with your credentials");
-          });
-        } else if (response.status === 409) {
-          setLabel("User already exists!");
-        }
-      });
+      })
+        .then(response => {
+          if (response.ok) {
+            response.json().then((user: IUser) => {
+              props.history.push(`/`);
+              alert("User created successfully! Log in with your credentials");
+            });
+          } else if (response.status === 409) {
+            setLabel("User already exists!");
+          }
+        })
+        .catch(e => console.log("Angel " + e));
     } else {
       alert("Fill the fields correctly, please!");
     }
@@ -176,9 +180,16 @@ const Register: React.FC<IPropsGlobal & RouteComponentProps> = props => {
             </div>
           </div>
           {label && (
-              <small data-testid="invalid_span" className="has-text-danger" css={css`margin:0px !important;padding:0px !important;`}>
-                {label}
-              </small>
+            <small
+              data-testid="invalid_span"
+              className="has-text-danger"
+              css={css`
+                margin: 0px !important;
+                padding: 0px !important;
+              `}
+            >
+              {label}
+            </small>
           )}
         </div>
         <div className="column is-4">
@@ -199,7 +210,12 @@ const Register: React.FC<IPropsGlobal & RouteComponentProps> = props => {
               </div>
             </div>
           </div>
-          <div className="field" css={css`text-align:center;`}>
+          <div
+            className="field"
+            css={css`
+              text-align: center;
+            `}
+          >
             {profiles.length > 0 && (
               <img
                 css={css`
