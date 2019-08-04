@@ -44,8 +44,7 @@ controller.byReviewId = (req, res, _next) => {
         if (result.length > 0) res.send(result);
         else
           res
-            .status(404)
-            .send({ error: 404, message: "No Comments found On This Review" });
+            .send([]);
       })
       .catch(err =>
         res.status(400).send({ error: 400, message: "Bad Request" })
@@ -66,7 +65,7 @@ controller.byUserId = (req, res, _next) => {
         .then(result => {
           if (result.length > 0) res.send(result);
           else
-            res.status(404).send({ error: 404, message: "No Comments found" });
+            res.send([]);
         })
         .catch(err => {
           res.status(400).send({ error: 400, message: "Bad Request" });

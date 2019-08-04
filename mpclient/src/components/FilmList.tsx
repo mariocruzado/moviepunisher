@@ -30,6 +30,7 @@ interface IPropsGlobal {
 //https://api.themoviedb.org/3/search/movie?api_key=51c725de6ddb9024213b00473cda137b&query=mac
 const FilmList: React.FC<IPropsGlobal> = props => {
   const [pages, savePages] = React.useState(0);
+  const [calculateAvg, setCalculateAvg] = React.useState(false);
 
   const getLastFilms = () => {
     const apiUrl = "https://api.themoviedb.org/3/";
@@ -42,6 +43,7 @@ const FilmList: React.FC<IPropsGlobal> = props => {
       .then(response => {
         if (response.ok) {
           response.json().then((films: any) => {
+            setCalculateAvg(true);
             props.saveLastFilms(films.results);
             savePages(films.total_pages);
           });
@@ -85,8 +87,10 @@ const FilmList: React.FC<IPropsGlobal> = props => {
 
   React.useEffect(getLastFilms, []);
   React.useEffect(() => {
+    if (calculateAvg) {
     const idsarray = props.storedFilms.map(f => f.id);
     getAvgReviews(idsarray);
+    }
   }, [props.storedFilms.length]);
 
   if (!props.storedFilms) return null;
@@ -136,7 +140,7 @@ const FilmList: React.FC<IPropsGlobal> = props => {
                     </div>
                     <div className="mr-grid">
                       <div className="col2 movie-likes">
-                        <span>{f.average ? f.average : "Not rated yet"} </span>
+                        <span>{f.average ? f.average.toFixed(1) : "Not rated yet"} </span>
                         {[...Array(parseInt(f.average ? f.average : 0))].map(
                           (_i, j) => (
                             <i className="fas fa-star" key={j} />
