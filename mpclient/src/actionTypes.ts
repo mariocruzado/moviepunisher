@@ -16,4 +16,8 @@ type TReset = {
     type: 'RESET';
 }
 
-export type TAction = TSetToken | TSetLoginExpire | TSaveLastFilms | TReset;
+type TSaveQuery = {
+    type: 'SAVE_QUERY';
+    newQuery:string;
+}
+export type TAction = TSetToken | TSetLoginExpire | TSaveLastFilms | TReset | TSaveQuery;

@@ -17,6 +17,10 @@ export const saveLastFilms: ActionCreator<TAction> = (storedFilms:any[]) => ({
     storedFilms
 });
 
+export const saveQuery: ActionCreator<TAction> = (newQuery:string) => ({
+    type:'SAVE_QUERY',
+    newQuery
+});
 export const reset: ActionCreator<TAction> = () => ({
     type: 'RESET'
 });

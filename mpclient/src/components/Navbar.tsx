@@ -29,7 +29,7 @@ const Navbar: React.FC<IPropsGlobal & RouteComponentProps<any>> = props => {
   const currentUser = () => {
     const dToken = jwt.decode(props.token);
     if (dToken !== null && typeof dToken !== "string") {
-      return dToken.username;
+      return dToken;
     }
     return null;
   };
@@ -72,14 +72,14 @@ const Navbar: React.FC<IPropsGlobal & RouteComponentProps<any>> = props => {
         <div className="navbar-end">
           <div className="navbar-item">
             <span>
-              {} <b>{currentUser()}</b>
+              {} <b>{currentUser()!.username}</b>
             </span>
           </div>
           <div className="navbar-item">
             <div className="buttons">
-              <a className="button is-primary" onClick={logOut}>
+              <Link className="button is-primary" to={`/profile`}>
                 <i className="fas fa-user-edit" />
-              </a>
+              </Link>
               <a className="button is-danger" onClick={logOut}>
                 <i className="fas fa-power-off" />
               </a>

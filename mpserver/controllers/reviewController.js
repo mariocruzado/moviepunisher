@@ -18,10 +18,7 @@ controller.getAllReviews = (req, res, _next) => {
       .then(result => {
         if (result.length > 0) {
           res.send(result);
-        } else
-          res
-            .status(404)
-            .send({ error: "404", message: "Reviews List Is Empty" });
+        } else res.send([]);
       })
       .catch(err => {
         res.status(400).send({ error: "400", message: "Bad Request" });
@@ -62,8 +59,7 @@ controller.getReviewsByFilm = (req, res, _next) => {
       .then(result => {
         if (result.length > 0) {
           res.send(result);
-        } else
-          res.status(404).send({ error: "404", message: "No Reviews found" });
+        } else res.send([]);
       })
       .catch(err => {
         res.status(400).send({ error: "400", message: "Bad Request" });
@@ -83,10 +79,7 @@ controller.getReviewsByUser = (req, res, _next) => {
       .then(result => {
         if (result.length > 0) {
           res.send(result);
-        } else
-          res
-            .status(404)
-            .send({ error: "404", message: "No Reviews From This User" });
+        } else res.send([]);
       })
       .catch(err => {
         res.status(400).send({ error: "400", message: "Bad Request" });
@@ -102,8 +95,7 @@ controller.checkIfReviewed = (req, res, _next) => {
   try {
     const vToken = jwt.verify(token, jwtSecret);
     if (req.params.film_id) {
-      model.checkifUserReviewed(vToken.id, req.params.film_id)
-      .then(result => {
+      model.checkifUserReviewed(vToken.id, req.params.film_id).then(result => {
         if (result.length > 0) {
           res.status(409).send({
             error: 409,
@@ -264,13 +256,10 @@ controller.getReviewsAndAverage = (req, res, _next) => {
     const body = req.body.toString();
     const body2 = body.replace("[", "(");
     const body3 = body2.replace("]", ")");
-
-    console.log(body3);
-
+    
     model
       .reviewsAverage(body3)
       .then(result => {
-        console.log(result);
         res.send(result);
       })
       .catch(err => {

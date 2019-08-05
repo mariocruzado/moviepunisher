@@ -5,7 +5,6 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-image:url('https://thewallpaper.co/wp-content/uploads/2016/10/abstract-grey-wallpaper-hd-backgrounds-hd-wallpapers-desktop-images-download-windows-wallpapers-colourful-4k-picture-artwork-lovely-2560x1600.jpg');
   background-attachment: fixed;
 }
 
@@ -17,7 +16,6 @@ code {
 .mainsite {
   margin-top:60px !important;
   margin-bottom:20px !important;
-
 }
 
 @import url('https://fonts.googleapis.com/css?family=PT+Sans');
@@ -113,26 +111,10 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00ffffff', e
 @import url(https://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700,800,300italic,400italic,600italic,700italic,800italic);
 
 
-h1,h2,h3,h4,h5 {
-  font-family:'Montserrat', sans-serif;
-  color:#e7e7e7;
-  margin:0px;
-}
-
-h1 {
-  font-size:36px;
-  font-weight:400;
-}
-
-h3 {
-  font-size:14px;
-  font-weight:400;
-  color:#fe4141;
-}
-
-h5 {
-  font-size:12px;
-  font-weight:400;
+h1.specialtitle {
+  font-family:'Montserrat', sans-serif !important;
+  color:#e7e7e7 !important;
+  margin:0px !important;
 }
 
 .movie-gen{

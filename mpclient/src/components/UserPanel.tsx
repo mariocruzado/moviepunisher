@@ -1,20 +1,18 @@
 import React from "react";
 import { connect } from "react-redux";
-import { IFilm } from "../interfaces";
 import { IGlobalState } from "../reducers/global";
-import FilmDetails from "./FilmDetails";
-import FilmReviews from "./FilmReviews";
-import { RouteComponentProps, Link } from "react-router-dom";
+import { RouteComponentProps, Link } from 'react-router-dom';
+import UserDetails from '../components/UserDetails';
 
-//Enabling Emotion
 /** @jsx jsx */
 import { css, jsx } from "@emotion/core";
+import UserReviews from './UserReviews';
 
 interface IPropsGlobal {
   token: string;
 }
-const SingleFilm: React.FC<
-  IPropsGlobal & RouteComponentProps<{ film_id: any }>
+const UserPanel: React.FC<
+  IPropsGlobal & RouteComponentProps<{ user_id: any }>
 > = props => {
   return (
     <div
@@ -33,9 +31,8 @@ const SingleFilm: React.FC<
           Go back
         </Link>
       </div>
-
-      <FilmDetails film_id={props.match.params.film_id} />
-      <FilmReviews film_id={props.match.params.film_id} />
+      <UserDetails></UserDetails>
+      <UserReviews user_id={props.match.params.user_id} />
     </div>
   );
 };
@@ -43,7 +40,8 @@ const SingleFilm: React.FC<
 const mapStateToProps = (globalState: IGlobalState) => ({
   token: globalState.token
 });
+
 export default connect(
   mapStateToProps,
   null
-)(SingleFilm);
+)(UserPanel);

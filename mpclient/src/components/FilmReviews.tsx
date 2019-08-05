@@ -89,6 +89,7 @@ const FilmReviews: React.FC<IPropsGlobal & any> = props => {
     setReviewToEdit(reviewid);
     setDisplayEdit(true);
   };
+
   //Check if user have already reviewed the film
   const checkIfReviewed = () => {
     return reviews.find((r: any) => r.user_id === decodedToken!.id)
@@ -127,7 +128,7 @@ const FilmReviews: React.FC<IPropsGlobal & any> = props => {
   //Add a Review
   const addReview = () => {
     if (reviewFieldChecker() && decodedToken) {
-      const comment = {
+      const rvw = {
         user_id: decodedToken!.id,
         content: reviewContent,
         title: reviewTitle,
@@ -139,7 +140,7 @@ const FilmReviews: React.FC<IPropsGlobal & any> = props => {
           "Content-Type": "application/json",
           Authorization: "Bearer " + props.token
         },
-        body: JSON.stringify(comment)
+        body: JSON.stringify(rvw)
       }).then(response => {
         if (response.ok) {
           response.json().then((review: any) => {
@@ -166,6 +167,7 @@ const FilmReviews: React.FC<IPropsGlobal & any> = props => {
         <EditReview
           review_id={reviewToEdit}
           close_edit={() => setDisplayEdit(false)}
+          rlist={reviews}
         />
       )}
       {!displayEdit && (

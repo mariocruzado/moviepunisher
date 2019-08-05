@@ -6,6 +6,7 @@ import { IGlobalState } from "../reducers/global";
 /** @jsx jsx */
 import { css, jsx } from "@emotion/core";
 import { RouteComponentProps, Link } from 'react-router-dom';
+import { reviewContentChecker, reviewTitleChecker } from '../tools/fieldChecker';
 
 interface IPropsGlobal {
   token: string;
@@ -63,8 +64,20 @@ const EditReview: React.FC<IPropsGlobal & any> = props => {
         });
     });
   };
-  
+  const updateReviewArray = (reviewid:number, nReview:any) => {
+    const rToChange = props.rlist.findIndex((r:any) => r.id === reviewid);
+    props.rlist[rToChange] = nReview;
+  }
+
+  const reviewFieldChecker = () => {
+    let res = false;
+    if (reviewContentChecker(reviewContent) && reviewTitleChecker(reviewTitle))
+      res = true;
+    return res;
+  };
+
   const updateReview = (reviewid:number) => {
+    if (reviewFieldChecker()) {
       fetch("http://localhost:8080/api/reviews/" + reviewid, {
           method:'PUT',
           headers: {
@@ -78,9 +91,13 @@ const EditReview: React.FC<IPropsGlobal & any> = props => {
       }).then(response => {
           if (response.ok)
           response.json().then((review: any) => {
+              updateReviewArray(review.id, review);
               props.close_edit();
           })
       })
+    } else {
+      setLabel(true);
+    }
   }
 
   React.useEffect(() => getReviewData(props.review_id), [props.review_id]);
