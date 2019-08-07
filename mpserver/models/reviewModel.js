@@ -7,17 +7,19 @@ const SQL_checkIfUserReviewed = () =>
   `SELECT id FROM review WHERE user_id = ? AND film_id = ?`;
 
 //Get a detailed Review
-const SQL_findReviewById = () => `SELECT review.id, review.film_id, review.user_id, review.title, review.content, review.rating, review.date, review.modifiedby, user.username AS user_username, user.isadmin AS user_isadmin, profile.name AS profile_name, profile.avatar AS profile_avatar
+const SQL_findReviewById = () => `SELECT review.id, review.film_id, review.user_id, review.title, review.content, review.rating, review.date, review.modifiedby, u1.username AS user_username, u1.isadmin AS user_isadmin, profile.name AS profile_name, profile.avatar AS profile_avatar, u2.username AS modifiedby_username
 FROM review
-INNER JOIN user ON user.id = review.user_id 
-INNER JOIN profile ON profile.id = user.profile_id
+INNER JOIN user AS u1 ON u1.id = review.user_id 
+INNER JOIN profile ON profile.id = u1.profile_id
+LEFT JOIN user AS u2 ON u2.id = review.modifiedby
 WHERE review.id = ?`;
 
 //Get all reviews by film ID
-const SQL_findReviewsByFilm = () => `SELECT review.id, review.film_id, review.user_id, review.title, review.content, review.rating, review.date, review.modifiedby, user.username AS user_username, user.isadmin AS user_isadmin, profile.name AS profile_name, profile.avatar AS profile_avatar
+const SQL_findReviewsByFilm = () => `SELECT review.id, review.film_id, review.user_id, review.title, review.content, review.rating, review.date, review.modifiedby, u1.username AS user_username, u1.isadmin AS user_isadmin, profile.name AS profile_name, profile.avatar AS profile_avatar, u2.username AS modifiedby_username
 FROM review
-INNER JOIN user ON user.id = review.user_id 
-INNER JOIN profile ON profile.id = user.profile_id
+INNER JOIN user AS u1 ON u1.id = review.user_id 
+INNER JOIN profile ON profile.id = u1.profile_id
+LEFT JOIN user AS u2 ON u2.id = review.modifiedby
 WHERE review.film_id = ? ORDER BY review.date DESC`;
 
 //Get all reviews by user ID

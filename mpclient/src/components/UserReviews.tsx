@@ -40,7 +40,7 @@ const UserReviews: React.FC<IPropsGlobal & any> = props => {
 
   React.useEffect(() => retrieveReviews(decodedToken!.id), []);
   return (
-    <div>
+    <div className="box">
       <div className="tabs">
         <ul>
           <li className={`${display === "reviews" ? "is-active" : ""}`}>

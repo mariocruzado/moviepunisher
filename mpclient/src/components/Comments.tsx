@@ -122,8 +122,7 @@ const Comments: React.FC<IPropsGlobal & any> = props => {
       )}
 
       {displayComments && (
-        <div>
-          <hr />
+        <div css={css`margin-top:10px !important;`}>
           {comments.map((c: any) => (
             <div
               className="columns"

@@ -8,6 +8,7 @@ import { Link } from "react-router-dom";
 /** @jsx jsx */
 import { css, jsx } from "@emotion/core";
 import { searchBoxChecker, alphanumericChecker } from "../tools/fieldChecker";
+import { IPages } from "../interfaces";
 
 const formatDate = () => {
   const today = new Date();
@@ -25,9 +26,11 @@ interface IPropsGlobal {
   token: string;
   query: string;
   storedFilms: any[];
+  pageInfo: IPages;
 
   saveLastFilms: (films: any[]) => void;
   saveQuery: (query: string) => void;
+  setPages: (pages: IPages) => void;
 }
 
 //https://api.themoviedb.org/3/search/movie?api_key=51c725de6ddb9024213b00473cda137b&query=mac
@@ -35,8 +38,6 @@ const FilmList: React.FC<IPropsGlobal> = props => {
   const apiKey = "api_key=51c725de6ddb9024213b00473cda137b";
   const apiUrl = "https://api.themoviedb.org/3/";
 
-  const [pages, setPages] = React.useState(0);
-  const [filmpage, setFilmPage] = React.useState(1);
   const [filmresults, setFilmResults] = React.useState(0);
   const [calculateAvg, setCalculateAvg] = React.useState(false);
   const [header, setHeader] = React.useState("");
@@ -44,7 +45,6 @@ const FilmList: React.FC<IPropsGlobal> = props => {
   const [search, setSearch] = React.useState("");
   const [roundSearchBox, setRoundSearchBox] = React.useState(false);
   const defaultQuery = `discover/movie?primary_release_date.gte=2019-06-04&primary_release_date.lte=${formatDate()}`;
-
 
   const updateSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (
@@ -60,7 +60,10 @@ const FilmList: React.FC<IPropsGlobal> = props => {
   //Film searcher
   const searchFilms = (search: string) => {
     if (searchBoxChecker(search)) {
-      setFilmPage(1);
+      props.setPages({
+        ...props.pageInfo,
+        current: 1
+      });
       props.saveQuery(`search/movie?query=${search.replace(" ", "+")}`);
     } else {
       setRoundSearchBox(true);
@@ -69,7 +72,7 @@ const FilmList: React.FC<IPropsGlobal> = props => {
 
   //Get films by query
   const retrieveFilms = () => {
-    fetch(`${apiUrl}${props.query}&${apiKey}&page=${filmpage}`, {
+    fetch(`${apiUrl}${props.query}&${apiKey}&page=${props.pageInfo.current}`, {
       method: "GET",
       headers: { "Content-Type": "application/json" }
     })
@@ -79,9 +82,12 @@ const FilmList: React.FC<IPropsGlobal> = props => {
             .json()
             .then((films: any) => {
               if (films.total_results > 0) {
-                setCalculateAvg(true);
                 props.saveLastFilms(films.results);
-                setPages(films.total_pages);
+                setCalculateAvg(true);
+                props.setPages({
+                  ...props.pageInfo,
+                  total: films.total_pages
+                });
                 setFilmResults(films.total_results);
 
                 if (props.query === defaultQuery)
@@ -94,7 +100,10 @@ const FilmList: React.FC<IPropsGlobal> = props => {
                   );
               } else {
                 props.saveLastFilms([]);
-                setPages(1);
+                props.setPages({
+                  total:1,
+                  current: 1
+                });
                 setFilmResults(0);
                 setHeader("Sorry! No results :(");
               }
@@ -104,19 +113,35 @@ const FilmList: React.FC<IPropsGlobal> = props => {
       })
       .catch(e => console.log(e));
   };
+
   React.useEffect(() => {
     setHeader("Loading...");
     if (!props.query) {
       props.saveQuery(defaultQuery);
     }
   }, []);
-  React.useEffect(() => retrieveFilms(), [filmpage, props.query]);
+
+  React.useEffect(() => {
+    if (props.query) {
+      retrieveFilms();
+    }
+  }, [props.pageInfo.current, props.query]);
 
   const prevPage = () => {
-    if (filmpage > 1) setFilmPage(p => p - 1);
+    if (props.pageInfo.current > 1) {
+      props.setPages({
+        ...props.pageInfo,
+        current: props.pageInfo.current - 1
+      });
+    }
   };
   const nextPage = () => {
-    if (filmpage < pages) setFilmPage(p => p + 1);
+    if (props.pageInfo.current < props.pageInfo.total) {
+      props.setPages({
+        ...props.pageInfo,
+        current: props.pageInfo.current + 1
+      });
+    }
   };
 
   //AVG Ratings by reviews
@@ -137,7 +162,7 @@ const FilmList: React.FC<IPropsGlobal> = props => {
               const { film_id, nReviews, average } = row;
               const film = films.find(f => f.id === film_id);
               film.nReviews = nReviews;
-              film.average = Number(average);
+              film.average = average;
             });
             props.saveLastFilms([...films]);
           });
@@ -149,66 +174,28 @@ const FilmList: React.FC<IPropsGlobal> = props => {
     return null;
   };
 
-  const avgInt = (decimal: number) => {
-    return Math.round(decimal);
-  };
-
   // React.useEffect(getLastFilms, []);
   React.useEffect(() => {
-    // if (calculateAvg) {
-    //   const idsarray = props.storedFilms.map(f => f.id);
-    //   getAvgReviews(idsarray);
-    // }
-  }, [props.storedFilms.length]);
+    if (calculateAvg) {
+      const idsarray = props.storedFilms.map(f => f.id);
+      getAvgReviews(idsarray);
+      setCalculateAvg(false);
+    }
+  }, [calculateAvg]);
 
   if (!props.storedFilms) return null;
 
   return (
     <div>
-      <div
-        css={css`
-          margin-top: 105px !important;
-        `}
-      >
-        <div
-          className="box has-background-grey-darker has-text-light"
-          css={css`
-            position: fixed;
-            width: 100%;
-            z-index: 50;
-            top: 52px;
-            border-radius: 0 !important;
-            padding: 5px 15px 5px 15px;
-          `}
-        >
-          <div className="field has-addons">
-            <div className="control">
-              <input
-                onChange={updateSearch}
-                value={search}
-                className={`input ${roundSearchBox ? "is-danger" : ""}`}
-                type="text"
-                placeholder="Try a search!"
-              />
-            </div>
-            <div className="control">
-              <a className="button" onClick={() => searchFilms(search)}>
-                <i className="fas fa-search" />
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
-
       {/* Films listed */}
       <div className="container has-background-grey">
         <div className="has-text-centered">
           <div
             className="box has-text-centered"
             css={css`
-              background-color: rgb(30, 27, 37) !important;
+              background-color: rgb(60, 60, 60) !important;
               color: rgb(255, 222, 255) !important;
-              border-radius:0px !important;
+              border-radius: 0px !important;
             `}
           >
             <h5>{header}</h5>
@@ -250,14 +237,23 @@ const FilmList: React.FC<IPropsGlobal> = props => {
                       </div>
                       <div className="mr-grid">
                         <div className="col2 movie-likes">
+                          <i className="fas fa-star" />
                           <span>
-                            {f.average ? f.average.toFixed(1) : "Not rated yet"}{" "}
+                            {" "}
+                            {f.average ? f.average.toFixed(1) : "Not rated yet"}
                           </span>
-                          {[...Array(parseInt(f.average ? f.average : 0))].map(
-                            (_i, j) => (
-                              <i className="fas fa-star" key={j} />
-                            )
-                          )}
+                          {/* {(() => {
+                            const result: any = [];
+                            for (let j = 0; j < parseInt(f.average); j++) {
+                              result.push(
+                                <i
+                                  className="fas fa-star"
+                                  key={f.original_title + "star" + j}
+                                />
+                              );
+                            }
+                            return result;
+                          })()} */}
                         </div>
                         <div className="col2">
                           <ul className="movie-likes">
@@ -283,7 +279,7 @@ const FilmList: React.FC<IPropsGlobal> = props => {
               </div>
             </Link>
           ))}
-          {pages > 1 && (
+          {props.pageInfo.total > 1 && (
             <div
               css={css`
                 width: 100%;
@@ -293,21 +289,32 @@ const FilmList: React.FC<IPropsGlobal> = props => {
                 className="box has-background-grey-darker has-text-light is-pulled-right"
                 css={css`
                   margin-right: 91px !important;
-                  margin-bottom:20px;
+                  margin-bottom: 20px;
                 `}
               >
-                                {filmpage > 1 && (
-                <a
-                  onClick={prevPage}
-                  css={css`
-                    margin-right: 5px;
-                  `}
-                >
-                  <i className="fas fa-chevron-left has-text-light" />
-
-                </a>)}
-                {filmpage > 1 && (
-                  <a css={css`font-size:0.8em;`}onClick={() => setFilmPage(1)} className="has-text-light" >
+                {props.pageInfo.current > 1 && (
+                  <a
+                    onClick={prevPage}
+                    css={css`
+                      margin-right: 5px;
+                    `}
+                  >
+                    <i className="fas fa-chevron-left has-text-light" />
+                  </a>
+                )}
+                {props.pageInfo.current > 1 && (
+                  <a
+                    css={css`
+                      font-size: 0.8em;
+                    `}
+                    onClick={() =>
+                      props.setPages({
+                        ...props.pageInfo,
+                        current: 1
+                      })
+                    }
+                    className="has-text-light"
+                  >
                     1
                   </a>
                 )}
@@ -316,24 +323,38 @@ const FilmList: React.FC<IPropsGlobal> = props => {
                   css={css`
                     margin-left: 10px;
                     margin-right: 10px;
-                    font-weight:bolder;
+                    font-weight: bolder;
                   `}
                   className="has-text-link"
                 >
-                  {filmpage}
+                  {props.pageInfo.current}
                 </span>
-                {filmpage !== pages && (
-                  <a css={css`font-size:0.8em;`} className="has-text-light" onClick={() => setFilmPage(pages)}>{pages}</a>
+                {props.pageInfo.current !== props.pageInfo.total && (
+                  <a
+                    css={css`
+                      font-size: 0.8em;
+                    `}
+                    className="has-text-light"
+                    onClick={() =>
+                      props.setPages({
+                        ...props.pageInfo,
+                        current: props.pageInfo.total
+                      })
+                    }
+                  >
+                    {props.pageInfo.total}
+                  </a>
                 )}
-                {filmpage !== pages && (
-                <a
-                  onClick={nextPage}
-                  css={css`
-                    margin-left: 5px;
-                  `}
-                >
-                  <i className="fas fa-chevron-right has-text-light" />
-                </a>)}
+                {props.pageInfo.current !== props.pageInfo.total && (
+                  <a
+                    onClick={nextPage}
+                    css={css`
+                      margin-left: 5px;
+                    `}
+                  >
+                    <i className="fas fa-chevron-right has-text-light" />
+                  </a>
+                )}
               </div>
             </div>
           )}
@@ -346,12 +367,14 @@ const FilmList: React.FC<IPropsGlobal> = props => {
 const mapStateToProps = (globalState: IGlobalState) => ({
   storedFilms: globalState.storedFilms,
   token: globalState.token,
-  query: globalState.saveQuery
+  query: globalState.saveQuery,
+  pageInfo: globalState.storedPages
 });
 
 const mapDispatchToProps = {
   saveLastFilms: actions.saveLastFilms,
-  saveQuery: actions.saveQuery
+  saveQuery: actions.saveQuery,
+  setPages: actions.savePages
 };
 
 export default connect(

@@ -1,26 +1,34 @@
-import { ActionCreator } from 'redux';
-import { TAction } from './actionTypes';
-
+import { ActionCreator } from "redux";
+import { TAction } from "./actionTypes";
+import { IPages } from './interfaces';
 
 export const setToken: ActionCreator<TAction> = (newToken: string) => ({
-    type:'SET_TOKEN',
-    newToken
-})
-
-export const setLoginExpiration: ActionCreator<TAction> = (expirationId: number) => ({
-    type:'SET_LOGINEXPIRE',
-    expirationId
+  type: "SET_TOKEN",
+  newToken
 });
 
-export const saveLastFilms: ActionCreator<TAction> = (storedFilms:any[]) => ({
-    type:'SAVE_LASTFILMS',
-    storedFilms
+export const setLoginExpiration: ActionCreator<TAction> = (
+  expirationId: number
+) => ({
+  type: "SET_LOGINEXPIRE",
+  expirationId
 });
 
-export const saveQuery: ActionCreator<TAction> = (newQuery:string) => ({
-    type:'SAVE_QUERY',
-    newQuery
+export const saveLastFilms: ActionCreator<TAction> = (storedFilms: any[]) => ({
+  type: "SAVE_LASTFILMS",
+  storedFilms
 });
+
+export const saveQuery: ActionCreator<TAction> = (newQuery: string) => ({
+  type: "SAVE_QUERY",
+  newQuery
+});
+
 export const reset: ActionCreator<TAction> = () => ({
-    type: 'RESET'
+  type: "RESET"
+});
+
+export const savePages: ActionCreator<TAction> = (pageInfo:IPages) => ({
+    type:'SAVE_PAGES',
+    pageInfo
 });

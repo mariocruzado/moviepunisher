@@ -8,6 +8,10 @@ export interface IFilm {
     nReviews:number;
     id:number;
     overview:string;
+    genres:[];
+    tagline:string;
+    spoken_languages:[];
+    runtime:number;
 }
 
 export interface IUser {
@@ -21,4 +25,9 @@ export interface IUser {
     profile_id:number;
     description:string;
     points:number;
+}
+
+export interface IPages {
+    current: number;
+    total: number;
 }

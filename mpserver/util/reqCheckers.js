@@ -37,7 +37,7 @@ checker.checkProfileId = id => {
 //Reviews Fields
 checker.checkReviewContent = content => {
   let res = false;
-  if (content.length < 600) res = true;
+  if (content.length < 1501) res = true;
   return res;
 };
 

@@ -59,6 +59,7 @@ controller.getReviewsByFilm = (req, res, _next) => {
       .then(result => {
         if (result.length > 0) {
           res.send(result);
+          console.log(result);
         } else res.send([]);
       })
       .catch(err => {
@@ -124,9 +125,10 @@ controller.addReview = (req, res, _next) => {
       !isNaN(req.params.filmid)
     ) {
       model
-        .checkifUserReviewed(vToken.id, req.params.film_id)
+        .checkifUserReviewed(vToken.id, req.params.filmid)
         .then(result => {
           if (result.length > 0) {
+            console.log("Another previous review exists for this film");
             res.status(409).send({
               error: 409,
               message: "Another previous review exists for this film"

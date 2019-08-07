@@ -5,7 +5,7 @@ import Register from "./Register";
 
 const Root: React.FC<any> = () => {
   return (
-    <section className="hero is-info is-fullheight backgroundedbody">
+    <section className="hero is-dark is-fullheight backgroundedbody">
       <div className="hero-body">
         <div className="container">
           <div className="columns is-centered">

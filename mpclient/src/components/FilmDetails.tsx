@@ -14,7 +14,7 @@ interface IPropsGlobal {
   films: IFilm[];
 }
 const FilmDetails: React.FC<any> = props => {
-  const [film, setFilm] = React.useState<any | null>(null);
+  const [film, setFilm] = React.useState<IFilm | null>(null);
 
   //   const filmIndex = React.useMemo(() => {
   //     console.log(props.films);
@@ -50,13 +50,8 @@ const FilmDetails: React.FC<any> = props => {
   if (!film) return null;
   return (
     <div
-      className="card"
-      css={css`
-        border-radius: 10px;
-        background-color: rgba(255, 255, 255, 0.8) !important;
-      `}
     >
-      {film.backdrop_path && (
+      {/* {film.backdrop_path && (
         <div className="card-image">
           <figure className="image is-16by9">
             <img
@@ -65,10 +60,65 @@ const FilmDetails: React.FC<any> = props => {
             />
           </figure>
         </div>
-      )}
+      )} */}
 
       <div className="card-content">
-        <div className="media">
+        {/* new card */}
+        <div className="movie_card" id="ave">
+          <div className="info_section">
+            <div className="movie_header">
+              <img
+                className="locandina"
+                src={`https://image.tmdb.org/t/p/w200/${film.poster_path}`}
+              />
+              <h1>
+                {film.original_title} ({film.release_date.split("-")[0]})
+              </h1>
+              <h4 className="is-size-7">{film.tagline}</h4>
+              <div
+                  css={css`
+                    margin: 10px 0px 10px 0px;
+                  `}
+                >
+              {film.genres.map((g: any) => (
+                  <span
+                    css={css`
+                      margin: 0px 0px 0px 3px;
+                      padding: 5px;
+                      border-radius: 10px;
+                      font-size: 0.7em !important;
+                    `}
+                    className="has-background-dark has-text-white"
+                    key={g.id}
+                  >
+                    {g.name}
+                  </span>
+              ))}
+              </div>
+              <span className="minutes" css={css`font-size:0.9em !important;`}>{film.runtime?film.runtime + " min":'Unknown length'}</span>
+            </div>
+            <div className="movie_desc">
+              <p
+                className="text"
+                css={css`
+                  font-size: 0.9em;
+                `}
+              >
+                {film.overview}
+              </p>
+            </div>
+          </div>
+          {film.backdrop_path && (          <div
+            className="blur_back ave_back"
+            css={css`
+              background-image: url(${headerImg}${film.backdrop_path});
+            `}
+          />)}
+
+        </div>
+
+        {/* Old card */}
+        {/* <div className="media">
           <div className="media-content">
             <div className="columns">
               <div className="column is-4 is-mobile is-centered">
@@ -92,13 +142,13 @@ const FilmDetails: React.FC<any> = props => {
               >
                 <div>
                   <span className="title is-4 is-block">
-                  {film.original_title} ({film.release_date.split("-")[0]})
+                    {film.original_title} ({film.release_date.split("-")[0]})
                   </span>
                   <span className="subtitle is-size-6 is-block">
                     <i>{film.tagline}</i>
                   </span>
-                  </div>
-                  <div className="is-block">
+                </div>
+                <div className="is-block">
                   {film.genres.map((g: any) => (
                     <span
                       css={css`
@@ -113,7 +163,7 @@ const FilmDetails: React.FC<any> = props => {
                       {g.name}
                     </span>
                   ))}
-                  </div>
+                </div>
 
                 <div className="columns">
                   <div className="column">
@@ -149,7 +199,7 @@ const FilmDetails: React.FC<any> = props => {
             </div>
           </div>
         </div>
-        <div className="media-left">{film.overview}</div>
+        <div className="media-left">{film.overview}</div> */}
       </div>
     </div>
   );

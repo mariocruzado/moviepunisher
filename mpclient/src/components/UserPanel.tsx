@@ -17,7 +17,8 @@ const UserPanel: React.FC<
   return (
     <div
       css={css`
-        margin-top: 20px;
+        background-color:rgb(88, 88, 88);
+        border-radius:0px 10px 10px 10px;
       `}
       className="container"
     >
@@ -27,7 +28,7 @@ const UserPanel: React.FC<
         `}
       >
         {" "}
-        <Link className="button is-success" to={"/"}>
+        <Link className="is-dark button" css={css`font-size:0.92em;padding:0px 50px;border-radius:0px 0px 10px 0px !important;`}to={"/"}>
           Go back
         </Link>
       </div>

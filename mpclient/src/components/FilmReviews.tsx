@@ -1,6 +1,6 @@
 import React from "react";
 import { connect } from "react-redux";
-import { IGlobalState } from "../../../../../React/weatherbycity/src/reducers/global";
+import { IGlobalState } from "../reducers/global";
 
 //Enabling Emotion
 /** @jsx jsx */
@@ -48,7 +48,7 @@ const FilmReviews: React.FC<IPropsGlobal & any> = props => {
   ) => {
     if (
       !(event.currentTarget.value.charAt(0) === " ") &&
-      event.currentTarget.value.length < 501
+      event.currentTarget.value.length < 1501
     ) {
       setReviewContent(event.currentTarget.value);
       setLabel(false);
@@ -161,6 +161,7 @@ const FilmReviews: React.FC<IPropsGlobal & any> = props => {
     <div
       css={css`
         margin-top: 10px;
+        margin:auto;
       `}
     >
       {displayEdit && (
@@ -171,20 +172,31 @@ const FilmReviews: React.FC<IPropsGlobal & any> = props => {
         />
       )}
       {!displayEdit && (
-        <div className="box reviews has-background-white">
+        <div
+          className="box reviews"
+          css={css`
+            border-radius: 0px 0px 10px 10px;
+            background-color: rgba(255, 255, 255, 0.8) !important;
+          `}
+        >
           {reviews.length > 0 && (
             <div>
-              <h1 className="title is-size-6">
+              <h1
+                className="title is-size-6"
+                css={css`
+                  margin-bottom: 20px;
+                  margin-left: 10px;
+                `}
+              >
                 Showing all reviews ({reviews.length})
               </h1>
-              <hr />
             </div>
           )}
           {!checkIfReviewed() && !displayNewReview && (
             <div
               className="has-text-left"
               css={css`
-                margin-bottom: 20px;
+                margin-bottom: ${reviews.length > 0 ? "20px" : "0px"};
               `}
             >
               <button
@@ -203,7 +215,6 @@ const FilmReviews: React.FC<IPropsGlobal & any> = props => {
           )}
           {displayNewReview && (
             <div>
-              {reviews.length > 0 && <hr />}
               <div className="box">
                 <div className="control field">
                   <div className="columns">
@@ -274,7 +285,7 @@ const FilmReviews: React.FC<IPropsGlobal & any> = props => {
                           className={`textarea is-small has-fixed-size ${
                             label ? "is-danger" : ""
                           }`}
-                          placeholder="*Enter 100-500 characters"
+                          placeholder="*Enter 100-1500 characters"
                           css={css`
                             width: 100%;
                           `}
@@ -328,6 +339,13 @@ const FilmReviews: React.FC<IPropsGlobal & any> = props => {
                         <small className="is-subtitle">
                           by: <b>{r.user_username}</b>
                         </small>
+                        {r.modifiedby && (
+                          <span className="is-subtitle is-size-7"
+                          css={css`margin-left:10px;`}
+                          >
+                          (Edited by: <strong>{r.modifiedby_username}</strong>)
+                          </span>
+                        )}
                       </div>
                       <div className="column is-6">
                         {/* RIGHT BOX */}
