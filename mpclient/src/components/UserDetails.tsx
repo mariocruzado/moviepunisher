@@ -42,7 +42,7 @@ const UserDetails: React.FC<IPropsGlobal & any> = props => {
   };
 
   return (
-    <div className="box">
+    <div className="box" css={css`width:80%;`}>
       <div className="columns">
         <div className="column is-2">
           <div className="image is-128x128">

@@ -5,7 +5,6 @@ import { IGlobalState } from "../reducers/global";
 //Enabling Emotion
 /** @jsx jsx */
 import { css, jsx } from "@emotion/core";
-
 import { dateFormat } from "../tools/dateFormats";
 import jwt from "jsonwebtoken";
 import Comments from "./Comments";
@@ -15,9 +14,12 @@ import {
   reviewTitleChecker
 } from "../tools/fieldChecker";
 import EditReview from "./EditReview";
+import * as actions from "../actions";
+import { IFilm } from "../interfaces";
 
 interface IPropsGlobal {
   token: string;
+  actualFilm: IFilm;
 }
 
 const FilmReviews: React.FC<IPropsGlobal & any> = props => {
@@ -149,6 +151,23 @@ const FilmReviews: React.FC<IPropsGlobal & any> = props => {
             setReviewTitle("");
             setReviewContent("");
             setRating(3);
+
+            //Save film in local database
+            if (props.actualFilm) {
+              fetch(`http://localhost:8080/api/films/${props.actualFilm.id}`, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: "Bearer " + props.token
+                },
+                body: JSON.stringify({
+                  overview: props.actualFilm.overview,
+                  poster_path: props.actualFilm.poster_path,
+                  release_date: props.actualFilm.release_date,
+                  original_title: props.actualFilm.original_title
+                })
+              });
+            }
           });
         }
       });
@@ -161,7 +180,7 @@ const FilmReviews: React.FC<IPropsGlobal & any> = props => {
     <div
       css={css`
         margin-top: 10px;
-        margin:auto;
+        margin: auto;
       `}
     >
       {displayEdit && (
@@ -340,10 +359,14 @@ const FilmReviews: React.FC<IPropsGlobal & any> = props => {
                           by: <b>{r.user_username}</b>
                         </small>
                         {r.modifiedby && (
-                          <span className="is-subtitle is-size-7"
-                          css={css`margin-left:10px;`}
+                          <span
+                            className="is-subtitle is-size-7"
+                            css={css`
+                              margin-left: 10px;
+                            `}
                           >
-                          (Edited by: <strong>{r.modifiedby_username}</strong>)
+                            (Edited by: <strong>{r.modifiedby_username}</strong>
+                            )
                           </span>
                         )}
                       </div>
@@ -431,9 +454,9 @@ const FilmReviews: React.FC<IPropsGlobal & any> = props => {
 
 const mapStateToProps = (globalState: IGlobalState) => ({
   token: globalState.token,
-  films: globalState.token
+  films: globalState.token,
+  actualFilm: globalState.actualFilm
 });
-
 export default connect(
   mapStateToProps,
   null

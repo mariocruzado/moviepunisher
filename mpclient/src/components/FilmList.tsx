@@ -9,6 +9,7 @@ import { Link } from "react-router-dom";
 import { css, jsx } from "@emotion/core";
 import { searchBoxChecker, alphanumericChecker } from "../tools/fieldChecker";
 import { IPages } from "../interfaces";
+import FilmLocal from './FilmLocal';
 
 const formatDate = () => {
   const today = new Date();
@@ -188,6 +189,7 @@ const FilmList: React.FC<IPropsGlobal> = props => {
   return (
     <div>
       {/* Films listed */}
+      <FilmLocal />
       <div className="container has-background-grey">
         <div className="has-text-centered">
           <div

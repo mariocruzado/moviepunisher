@@ -14,6 +14,7 @@ const usersRouter = require('./routes/users');
 const adminRouter = require('./routes/admin');
 const reviewsRouter = require('./routes/review');
 const commentsRouter = require('./routes/comment');
+const filmsRouter = require('./routes/films');
 
 app.use(cors());
 
@@ -29,6 +30,7 @@ app.use('/api/users', usersRouter);
 app.use('/api/admin', adminRouter);
 app.use('/api/reviews', reviewsRouter);
 app.use('/api/comments', commentsRouter);
+app.use('/api/films', filmsRouter);
 
 
 module.exports = app;

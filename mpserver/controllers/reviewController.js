@@ -8,6 +8,9 @@ const ch = require("../util/reqCheckers");
 
 const controller = {};
 
+//Film model 
+const filmModel = require('../models/filmModel');
+
 controller.getAllReviews = (req, res, _next) => {
   const token = req.headers.authorization.split(" ")[1];
 
@@ -60,7 +63,11 @@ controller.getReviewsByFilm = (req, res, _next) => {
         if (result.length > 0) {
           res.send(result);
           console.log(result);
-        } else res.send([]);
+        } else { 
+          res.send([]) 
+        //If we dont have reviews for the film, we will be deleting film from local database
+          filmModel.deleteFilm(req.params.id);
+        };
       })
       .catch(err => {
         res.status(400).send({ error: "400", message: "Bad Request" });
@@ -128,7 +135,6 @@ controller.addReview = (req, res, _next) => {
         .checkifUserReviewed(vToken.id, req.params.filmid)
         .then(result => {
           if (result.length > 0) {
-            console.log("Another previous review exists for this film");
             res.status(409).send({
               error: 409,
               message: "Another previous review exists for this film"

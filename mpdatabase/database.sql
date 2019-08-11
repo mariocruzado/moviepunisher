@@ -64,6 +64,17 @@ CREATE TABLE reward (
 	CONSTRAINT FK_user_reward FOREIGN KEY (user_id) REFERENCES user (id)
 );
 
+CREATE TABLE localfilm (
+	id INT NOT NULL,
+    poster_path VARCHAR(200) NULL,
+    original_title VARCHAR(255) NULL,
+    release_date VARCHAR(16) NULL,
+    overview VARCHAR(600) NULL,
+    local_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    original_language VARCHAR(6) NULL,
+    CONSTRAINT PK_localfilm PRIMARY KEY (id)
+);
+
 CREATE 
     ALGORITHM = UNDEFINED 
     DEFINER = `root`@`localhost` 

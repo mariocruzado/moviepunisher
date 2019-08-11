@@ -1,4 +1,4 @@
-import { IPages } from './interfaces';
+import { IPages, IFilm } from './interfaces';
 type TSetToken = {
   type: "SET_TOKEN";
   newToken: string;
@@ -27,7 +27,13 @@ type TSaveFilmPages = {
   pageInfo: IPages;
 };
 
+type TSaveFilm = {
+  type:'SAVE_FILM';
+  actualFilm: IFilm;
+}
+
 export type TAction =
+  TSaveFilm
   | TSaveFilmPages
   | TSetToken
   | TSetLoginExpire

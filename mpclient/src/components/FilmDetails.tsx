@@ -1,9 +1,11 @@
 import React from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { connect } from "react-redux";
-import { IFilm } from "../interfaces";
+import { IFilm } from '../interfaces';
 import { IGlobalState } from "../reducers/global";
 import jwt from "jsonwebtoken";
+
+import * as actions from '../actions';
 
 //Enabling Emotion
 /** @jsx jsx */
@@ -12,10 +14,13 @@ import { css, jsx } from "@emotion/core";
 interface IPropsGlobal {
   token: string;
   films: IFilm[];
-}
-const FilmDetails: React.FC<any> = props => {
-  const [film, setFilm] = React.useState<IFilm | null>(null);
+  actualFilm:IFilm;
 
+  saveFilm:(film:IFilm) => void;
+}
+const FilmDetails: React.FC<IPropsGlobal & any> = props => {
+  // const [film, setFilm] = React.useState<IFilm | null>(null);
+  const [ready, setReady] = React.useState(false);
   //   const filmIndex = React.useMemo(() => {
   //     console.log(props.films);
   //     return props.films.findIndex((f: IFilm) => f.id == props.film_id);
@@ -35,19 +40,19 @@ const FilmDetails: React.FC<any> = props => {
     })
       .then(response => {
         if (response.ok) {
-          response.json().then((film: any) => {
-            setFilm(film);
-            console.log(film);
+          response.json().then((film: IFilm) => {
+            props.saveFilm(film);
+            setReady(true);
           });
         }
-      })
-      .catch(e => console.log("Angel " + e));
+      });
   };
 
   React.useEffect(() => getFilmData(props.film_id), [props.film_id]);
 
   const headerImg = "https://image.tmdb.org/t/p/original/";
-  if (!film) return null;
+  
+  if (!ready) return null;
   return (
     <div
     >
@@ -69,18 +74,18 @@ const FilmDetails: React.FC<any> = props => {
             <div className="movie_header">
               <img
                 className="locandina"
-                src={`https://image.tmdb.org/t/p/w200/${film.poster_path}`}
+                src={`https://image.tmdb.org/t/p/w200/${props.actualFilm.poster_path}`}
               />
               <h1>
-                {film.original_title} ({film.release_date.split("-")[0]})
+                {props.actualFilm.original_title} ({props.actualFilm.release_date.split("-")[0]})
               </h1>
-              <h4 className="is-size-7">{film.tagline}</h4>
+              <h4 className="is-size-7">{props.actualFilm.tagline}</h4>
               <div
                   css={css`
                     margin: 10px 0px 10px 0px;
                   `}
                 >
-              {film.genres.map((g: any) => (
+              {props.actualFilm.genres.map((g: any) => (
                   <span
                     css={css`
                       margin: 0px 0px 0px 3px;
@@ -95,7 +100,7 @@ const FilmDetails: React.FC<any> = props => {
                   </span>
               ))}
               </div>
-              <span className="minutes" css={css`font-size:0.9em !important;`}>{film.runtime?film.runtime + " min":'Unknown length'}</span>
+              <span className="minutes" css={css`font-size:0.9em !important;`}>{props.actualFilm.runtime?props.actualFilm.runtime + " min":'Unknown length'}</span>
             </div>
             <div className="movie_desc">
               <p
@@ -104,14 +109,14 @@ const FilmDetails: React.FC<any> = props => {
                   font-size: 0.9em;
                 `}
               >
-                {film.overview}
+                {props.actualFilm.overview}
               </p>
             </div>
           </div>
-          {film.backdrop_path && (          <div
+          {props.actualFilm.backdrop_path && (          <div
             className="blur_back ave_back"
             css={css`
-              background-image: url(${headerImg}${film.backdrop_path});
+              background-image: url(${headerImg}${props.actualFilm.backdrop_path});
             `}
           />)}
 
@@ -129,7 +134,7 @@ const FilmDetails: React.FC<any> = props => {
                   `}
                 >
                   <img
-                    src={`https://image.tmdb.org/t/p/w200/${film.poster_path}`}
+                    src={`https://image.tmdb.org/t/p/w200/${props.actualFilm.poster_path}`}
                     alt="Placeholder image"
                   />
                 </figure>
@@ -142,14 +147,14 @@ const FilmDetails: React.FC<any> = props => {
               >
                 <div>
                   <span className="title is-4 is-block">
-                    {film.original_title} ({film.release_date.split("-")[0]})
+                    {props.actualFilm.original_title} ({props.actualFilm.release_date.split("-")[0]})
                   </span>
                   <span className="subtitle is-size-6 is-block">
-                    <i>{film.tagline}</i>
+                    <i>{props.actualFilm.tagline}</i>
                   </span>
                 </div>
                 <div className="is-block">
-                  {film.genres.map((g: any) => (
+                  {props.actualFilm.genres.map((g: any) => (
                     <span
                       css={css`
                         margin-right: 5px;
@@ -170,7 +175,7 @@ const FilmDetails: React.FC<any> = props => {
                     <p className="subtitle is-6">Release Date:</p>
                   </div>
                   <div className="column">
-                    <p className="subtitle is-6">{film.release_date}</p>
+                    <p className="subtitle is-6">{props.actualFilm.release_date}</p>
                   </div>
                 </div>
                 <div className="columns">
@@ -179,7 +184,7 @@ const FilmDetails: React.FC<any> = props => {
                   </div>
                   <div className="column">
                     <p className="subtitle is-6">
-                      {film.spoken_languages.map((sl: any, j: number) => (
+                      {props.actualFilm.spoken_languages.map((sl: any, j: number) => (
                         <span key={`${sl.name}${j}`}>{sl.name} </span>
                       ))}
                     </p>
@@ -191,7 +196,7 @@ const FilmDetails: React.FC<any> = props => {
                   </div>
                   <div className="column">
                     <p className="subtitle is-6">
-                      {film.original_language.toUpperCase()}
+                      {props.actualFilm.original_language.toUpperCase()}
                     </p>
                   </div>
                 </div>
@@ -199,7 +204,7 @@ const FilmDetails: React.FC<any> = props => {
             </div>
           </div>
         </div>
-        <div className="media-left">{film.overview}</div> */}
+        <div className="media-left">{props.actualFilm.overview}</div> */}
       </div>
     </div>
   );
@@ -207,9 +212,11 @@ const FilmDetails: React.FC<any> = props => {
 
 const mapStateToProps = (globalState: IGlobalState) => ({
   token: globalState.token,
-  films: globalState.storedFilms
+  films: globalState.storedFilms,
+  actualFilm: globalState.actualFilm
 });
-export default connect(
-  mapStateToProps,
-  null
-)(FilmDetails);
+const mapDispatchToProps = {
+  saveFilm: actions.saveFilm
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(FilmDetails);
