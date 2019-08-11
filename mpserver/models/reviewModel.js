@@ -23,11 +23,12 @@ LEFT JOIN user AS u2 ON u2.id = review.modifiedby
 WHERE review.film_id = ? ORDER BY review.date DESC`;
 
 //Get all reviews by user ID
-const SQL_findReviewsByUser = () => `SELECT review.id, review.film_id, review.user_id, review.title, review.content, review.rating, review.date, review.modifiedby, user.username AS user_username, user.isadmin AS user_isadmin, profile.name AS profile_name, profile.avatar AS profile_avatar
+const SQL_findReviewsByUser = () => `SELECT review.id, review.film_id, review.user_id, review.title, review.content, review.rating, review.date, review.modifiedby, user.username AS user_username, user.isadmin AS user_isadmin, profile.name AS profile_name, profile.avatar AS profile_avatar, localfilm.original_title AS film_title, localfilm.poster_path AS film_cover
 FROM review
 INNER JOIN user ON user.id = review.user_id 
 INNER JOIN profile ON profile.id = user.profile_id
-WHERE review.user_id = ?`;
+INNER JOIN localfilm ON localfilm.id = review.film_id
+WHERE review.user_id = ? ORDER BY review.date DESC`;
 
 //Get all reviews
 const SQL_findAllReviews = () => `SELECT review.id, review.film_id, review.user_id, review.title, review.content, review.rating, review.date, review.modifiedby, user.username AS user_username, user.isadmin AS user_isadmin, profile.name AS profile_name, profile.avatar AS profile_avatar

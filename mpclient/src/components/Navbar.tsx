@@ -45,7 +45,7 @@ const Navbar: React.FC<IPropsGlobal & RouteComponentProps<any>> = props => {
         current: 1
       });
       props.saveQuery(`search/movie?query=${search}`);
-      props.history.push("/");
+      props.history.push('/search');
     } else {
       setRoundSearchBox(true);
     }
@@ -128,7 +128,7 @@ const Navbar: React.FC<IPropsGlobal & RouteComponentProps<any>> = props => {
           </div>
           <div className="navbar-item">
             <div className="buttons">
-              <Link className="button is-primary" to={`/profile`}>
+              <Link className="button is-primary" to={`/profile/${currentUser()!.id}`}>
                 <i className="fas fa-user-edit" />
               </Link>
               <a className="button is-danger" onClick={logOut}>
@@ -151,7 +151,7 @@ const mapStateToProps = (globalState: IGlobalState) => ({
 const mapDispatchToProps = {
   reset: actions.reset,
   setPages: actions.savePages,
-  saveQuery: actions.saveQuery
+  saveQuery: actions.saveQuery,
 };
 
 export default connect(

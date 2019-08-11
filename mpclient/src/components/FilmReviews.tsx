@@ -164,7 +164,8 @@ const FilmReviews: React.FC<IPropsGlobal & any> = props => {
                   overview: props.actualFilm.overview,
                   poster_path: props.actualFilm.poster_path,
                   release_date: props.actualFilm.release_date,
-                  original_title: props.actualFilm.original_title
+                  original_title: props.actualFilm.original_title,
+                  original_language:props.actualFilm.original_language
                 })
               });
             }
@@ -338,12 +339,24 @@ const FilmReviews: React.FC<IPropsGlobal & any> = props => {
                 <div className="content">
                   <div className="box">
                     <div className="columns">
-                      <div className="column is-1">
-                        <div className="image is-64x64">
-                          <img src={require("../img/" + r.profile_avatar)} />
+                      <div className="column is-2">
+                        <div
+                          css={css`
+                            display: flex;
+                            justify-content: center;
+                          `}
+                        >
+                          <figure className="image">
+                            <Link to={`/profile/${r.user_id}`}>
+                              <img
+                              css={css`max-width:30% !important;min-width:100px !important`}
+                                src={require("../img/" + r.profile_avatar)}
+                              />
+                            </Link>
+                          </figure>
                         </div>
                       </div>
-                      <div className="column is-5">
+                      <div className="column is-4">
                         <h6 className="is-block">
                           <i>"{r.title}</i>"
                         </h6>
@@ -356,7 +369,10 @@ const FilmReviews: React.FC<IPropsGlobal & any> = props => {
                           />
                         )}
                         <small className="is-subtitle">
-                          by: <b>{r.user_username}</b>
+                          by:{" "}
+                          <Link to={`/profile/${r.user_id}`}>
+                            <b>{r.user_username}</b>
+                          </Link>
                         </small>
                         {r.modifiedby && (
                           <span

@@ -17,7 +17,6 @@ const UserPanel: React.FC<
   return (
     <div
       css={css`
-        background-color:rgb(88, 88, 88);
         border-radius:0px 10px 10px 10px;
       `}
       className="container"
@@ -29,10 +28,10 @@ const UserPanel: React.FC<
       >
         {" "}
         <Link className="is-dark button" css={css`font-size:0.92em;padding:0px 50px;border-radius:0px 0px 10px 0px !important;`}to={"/"}>
-          Go back
+        <i className="fas fa-times-circle is-big has-text-light" />
         </Link>
       </div>
-      <UserDetails></UserDetails>
+      <UserDetails user_id={props.match.params.user_id}></UserDetails>
       <UserReviews user_id={props.match.params.user_id} />
     </div>
   );

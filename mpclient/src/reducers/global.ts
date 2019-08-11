@@ -7,6 +7,7 @@ import { pagesReducer } from './pagesReducer';
 import { IPages, IFilm } from '../interfaces';
 import { actualFilmReducer } from './actualFilmReducer';
 
+
 export interface IGlobalState {
     token: string;
     expirationId: number;

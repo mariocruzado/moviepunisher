@@ -2,13 +2,14 @@ import React from "react";
 import { IGlobalState } from "../reducers/global";
 import * as actions from "../actions";
 import { connect } from "react-redux";
-import FilmList from "../components/FilmList";
 import { Switch, Route } from "react-router-dom";
 import SingleFilm from "./SingleFilm";
 import UserPanel from "./UserPanel";
 //Enabling Emotion
 /** @jsx jsx */
 import { css, jsx } from '@emotion/core';
+import FilmSearch from "./FilmSearch";
+import FilmLocal from "./FilmLocal";
 
 const Main: React.FC<any> = props => {
   return (
@@ -22,9 +23,10 @@ const Main: React.FC<any> = props => {
       >
         {/* Siempre poner el más específico primero */}
         <Switch>
-          <Route path="/" exact component={FilmList} />
-          <Route path="/profile" exact component={UserPanel} />
+          <Route path="/" exact component={FilmLocal} />
+          <Route path="/search" exact component={FilmSearch} />
           <Route path="/:film_id" exact component={SingleFilm} />
+          <Route path="/profile/:user_id" exact component={UserPanel} />
         </Switch>
       </div>
       </section>

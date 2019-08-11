@@ -1,11 +1,11 @@
 import React from "react";
-import { RouteComponentProps } from "react-router-dom";
+import { RouteComponentProps, Link } from "react-router-dom";
 import { connect } from "react-redux";
-import { IFilm } from '../interfaces';
+import { IFilm } from "../interfaces";
 import { IGlobalState } from "../reducers/global";
 import jwt from "jsonwebtoken";
 
-import * as actions from '../actions';
+import * as actions from "../actions";
 
 //Enabling Emotion
 /** @jsx jsx */
@@ -14,9 +14,9 @@ import { css, jsx } from "@emotion/core";
 interface IPropsGlobal {
   token: string;
   films: IFilm[];
-  actualFilm:IFilm;
+  actualFilm: IFilm;
 
-  saveFilm:(film:IFilm) => void;
+  saveFilm: (film: IFilm) => void;
 }
 const FilmDetails: React.FC<IPropsGlobal & any> = props => {
   // const [film, setFilm] = React.useState<IFilm | null>(null);
@@ -37,25 +37,23 @@ const FilmDetails: React.FC<IPropsGlobal & any> = props => {
     fetch(`${apiUrl}&${apiKey}`, {
       method: "GET",
       headers: { "Content-Type": "application/json" }
-    })
-      .then(response => {
-        if (response.ok) {
-          response.json().then((film: IFilm) => {
-            props.saveFilm(film);
-            setReady(true);
-          });
-        }
-      });
+    }).then(response => {
+      if (response.ok) {
+        response.json().then((film: IFilm) => {
+          props.saveFilm(film);
+          setReady(true);
+        });
+      }
+    });
   };
 
   React.useEffect(() => getFilmData(props.film_id), [props.film_id]);
 
   const headerImg = "https://image.tmdb.org/t/p/original/";
-  
+
   if (!ready) return null;
   return (
-    <div
-    >
+    <div>
       {/* {film.backdrop_path && (
         <div className="card-image">
           <figure className="image is-16by9">
@@ -69,59 +67,80 @@ const FilmDetails: React.FC<IPropsGlobal & any> = props => {
 
       <div className="card-content">
         {/* new card */}
-        <div className="movie_card" id="ave">
-          <div className="info_section">
-            <div className="movie_header">
-              <img
-                className="locandina"
-                src={`https://image.tmdb.org/t/p/w200/${props.actualFilm.poster_path}`}
-              />
-              <h1>
-                {props.actualFilm.original_title} ({props.actualFilm.release_date.split("-")[0]})
-              </h1>
-              <h4 className="is-size-7">{props.actualFilm.tagline}</h4>
-              <div
+        <a href={props.actualFilm.homepage} target="_blank">
+          <div className="movie_card" id="ave">
+            <div className="info_section">
+              <div className="movie_header">
+                <img
+                  className="locandina"
+                  src={
+                    props.actualFilm.poster_path
+                      ? `https://image.tmdb.org/t/p/w400/${
+                          props.actualFilm.poster_path
+                        }`
+                      : `http://roblucastaylor.com/wp-content/uploads/2017/07/cover-image-unavailable.jpg`
+                  }
+                />
+                <h1>
+                  {props.actualFilm.original_title} (
+                  {props.actualFilm.release_date
+                    ? props.actualFilm.release_date.split("-")[0]
+                    : "?"}
+                  )
+                </h1>
+                <h4 className="is-size-7">{props.actualFilm.tagline}</h4>
+                <div
                   css={css`
                     margin: 10px 0px 10px 0px;
                   `}
                 >
-              {props.actualFilm.genres.map((g: any) => (
-                  <span
-                    css={css`
-                      margin: 0px 0px 0px 3px;
-                      padding: 5px;
-                      border-radius: 10px;
-                      font-size: 0.7em !important;
-                    `}
-                    className="has-background-dark has-text-white"
-                    key={g.id}
-                  >
-                    {g.name}
-                  </span>
-              ))}
+                  {props.actualFilm.genres.map((g: any) => (
+                    <span
+                      css={css`
+                        margin: 0px 0px 0px 3px;
+                        padding: 5px;
+                        border-radius: 10px;
+                        font-size: 0.7em !important;
+                      `}
+                      className="has-background-dark has-text-white"
+                      key={g.id}
+                    >
+                      {g.name}
+                    </span>
+                  ))}
+                </div>
+                <span
+                  className="minutes"
+                  css={css`
+                    font-size: 0.9em !important;
+                  `}
+                >
+                  {props.actualFilm.runtime
+                    ? props.actualFilm.runtime + " min"
+                    : "Unknown length"}
+                </span>
               </div>
-              <span className="minutes" css={css`font-size:0.9em !important;`}>{props.actualFilm.runtime?props.actualFilm.runtime + " min":'Unknown length'}</span>
+              <div className="movie_desc">
+                <p
+                  className="text"
+                  css={css`
+                    font-size: 0.9em;
+                  `}
+                >
+                  {props.actualFilm.overview}
+                </p>
+              </div>
             </div>
-            <div className="movie_desc">
-              <p
-                className="text"
+            {props.actualFilm.backdrop_path && (
+              <div
+                className="blur_back ave_back"
                 css={css`
-                  font-size: 0.9em;
+                  background-image: url(${headerImg}${props.actualFilm.backdrop_path});
                 `}
-              >
-                {props.actualFilm.overview}
-              </p>
-            </div>
+              />
+            )}
           </div>
-          {props.actualFilm.backdrop_path && (          <div
-            className="blur_back ave_back"
-            css={css`
-              background-image: url(${headerImg}${props.actualFilm.backdrop_path});
-            `}
-          />)}
-
-        </div>
-
+        </a>
         {/* Old card */}
         {/* <div className="media">
           <div className="media-content">
@@ -219,4 +238,7 @@ const mapDispatchToProps = {
   saveFilm: actions.saveFilm
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(FilmDetails);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(FilmDetails);

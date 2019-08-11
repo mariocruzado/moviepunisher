@@ -9,6 +9,7 @@ import { css, jsx } from "@emotion/core";
 import { dateFormat } from "../tools/dateFormats";
 import jwt from "jsonwebtoken";
 import { commentChecker } from "../tools/fieldChecker";
+import { Link } from 'react-router-dom';
 
 interface IPropsGlobal {
   token: string;
@@ -157,7 +158,7 @@ const Comments: React.FC<IPropsGlobal & any> = props => {
                         display: inline;
                       `}
                     >
-                      <strong className="is-size-6">{c.user_username}</strong>
+                      <Link to={`/profile/${c.user_id}`} css={css`font-size:0.85em !important;color:black`}><strong>{c.user_username}</strong></Link>
                     </div>
                     <span
                       css={css`

@@ -32,7 +32,7 @@ const SingleFilm: React.FC<
         
         {" "}
         <Link className="is-dark button" css={css`font-size:0.92em;padding:0px 50px;border-radius:0px 0px 10px 0px !important;`}to={"/"}>
-          Back
+          Back To Reviews
         </Link>
       </div>
 

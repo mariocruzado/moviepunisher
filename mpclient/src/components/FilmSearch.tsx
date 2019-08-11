@@ -9,7 +9,7 @@ import { Link } from "react-router-dom";
 import { css, jsx } from "@emotion/core";
 import { searchBoxChecker, alphanumericChecker } from "../tools/fieldChecker";
 import { IPages } from "../interfaces";
-import FilmLocal from './FilmLocal';
+import FilmLocal from "./FilmLocal";
 
 const formatDate = () => {
   const today = new Date();
@@ -35,41 +35,13 @@ interface IPropsGlobal {
 }
 
 //https://api.themoviedb.org/3/search/movie?api_key=51c725de6ddb9024213b00473cda137b&query=mac
-const FilmList: React.FC<IPropsGlobal> = props => {
+const FilmSearch: React.FC<IPropsGlobal> = props => {
   const apiKey = "api_key=51c725de6ddb9024213b00473cda137b";
   const apiUrl = "https://api.themoviedb.org/3/";
 
-  const [filmresults, setFilmResults] = React.useState(0);
   const [calculateAvg, setCalculateAvg] = React.useState(false);
   const [header, setHeader] = React.useState("");
-
-  const [search, setSearch] = React.useState("");
-  const [roundSearchBox, setRoundSearchBox] = React.useState(false);
   const defaultQuery = `discover/movie?primary_release_date.gte=2019-06-04&primary_release_date.lte=${formatDate()}`;
-
-  const updateSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (
-      !(event.currentTarget.value.charAt(0) === " ") &&
-      event.currentTarget.value.length < 101 &&
-      alphanumericChecker(event.currentTarget.value)
-    ) {
-      setSearch(event.currentTarget.value);
-      setRoundSearchBox(false);
-    }
-  };
-
-  //Film searcher
-  const searchFilms = (search: string) => {
-    if (searchBoxChecker(search)) {
-      props.setPages({
-        ...props.pageInfo,
-        current: 1
-      });
-      props.saveQuery(`search/movie?query=${search.replace(" ", "+")}`);
-    } else {
-      setRoundSearchBox(true);
-    }
-  };
 
   //Get films by query
   const retrieveFilms = () => {
@@ -89,23 +61,16 @@ const FilmList: React.FC<IPropsGlobal> = props => {
                   ...props.pageInfo,
                   total: films.total_pages
                 });
-                setFilmResults(films.total_results);
 
                 if (props.query === defaultQuery)
                   setHeader("Popular Movies Now");
-                else
-                  setHeader(
-                    `Showing ${films.total_results} results ${
-                      search ? `for '${search}'` : ""
-                    }`
-                  );
+                else setHeader(`Showing ${films.total_results} results`);
               } else {
                 props.saveLastFilms([]);
                 props.setPages({
-                  total:1,
+                  total: 1,
                   current: 1
                 });
-                setFilmResults(0);
                 setHeader("Sorry! No results :(");
               }
             })
@@ -177,33 +142,39 @@ const FilmList: React.FC<IPropsGlobal> = props => {
 
   // React.useEffect(getLastFilms, []);
   React.useEffect(() => {
-    if (calculateAvg) {
+    if (calculateAvg && props.storedFilms.length > 0) {
       const idsarray = props.storedFilms.map(f => f.id);
       getAvgReviews(idsarray);
       setCalculateAvg(false);
     }
   }, [calculateAvg]);
 
-  if (!props.storedFilms) return null;
-
   return (
     <div>
       {/* Films listed */}
-      <FilmLocal />
       <div className="container has-background-grey">
-        <div className="has-text-centered">
-          <div
-            className="box has-text-centered"
-            css={css`
-              background-color: rgb(60, 60, 60) !important;
-              color: rgb(255, 222, 255) !important;
-              border-radius: 0px !important;
-            `}
-          >
-            <h5>{header}</h5>
-          </div>
+        <div
+          css={css`
+            position: absolute;
+            top: 0px;
+            left:5px;
+          `}
+        >
+            <Link to={'/'}>
+          <i className="fas fa-times-circle is-big has-text-light" />
+          </Link>
         </div>
-        <div className="columns is-multiline is-mobile is-centered">
+        <div
+          className="box has-text-centered"
+          css={css`
+            background-color: rgb(60, 60, 60) !important;
+            color: rgb(255, 222, 255) !important;
+            border-radius: 0px !important;
+          `}
+        >
+          <h5>{header}</h5>
+        </div>
+        {props.storedFilms.length > 0 && (<div className="columns is-multiline is-mobile is-centered">
           {props.storedFilms.map(f => (
             <Link to={`/${f.id}`} key={f.id}>
               <div className="column is-three-quarters-mobile is-half-tablet is-half-desktop is-one-third-widescreen is-one-quarter-fullhd">
@@ -231,7 +202,7 @@ const FilmList: React.FC<IPropsGlobal> = props => {
                           </h1>
                           <ul className="movie-gen">
                             <li>
-                              Released: {f.release_date} / Country:{" "}
+                              Released: {f.release_date?f.release_date:'?'} / Country:{" "}
                               {f.original_language.toUpperCase()}
                             </li>
                           </ul>
@@ -281,6 +252,7 @@ const FilmList: React.FC<IPropsGlobal> = props => {
               </div>
             </Link>
           ))}
+          {/* Paginate */}
           {props.pageInfo.total > 1 && (
             <div
               css={css`
@@ -360,7 +332,8 @@ const FilmList: React.FC<IPropsGlobal> = props => {
               </div>
             </div>
           )}
-        </div>
+        </div>)}
+        
       </div>
     </div>
   );
@@ -382,4 +355,4 @@ const mapDispatchToProps = {
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(FilmList);
+)(FilmSearch);
