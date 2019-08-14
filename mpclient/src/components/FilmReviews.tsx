@@ -16,13 +16,17 @@ import {
 import EditReview from "./EditReview";
 import * as actions from "../actions";
 import { IFilm } from "../interfaces";
+import { deleteFilm } from "../actions";
 
 interface IPropsGlobal {
   token: string;
   actualFilm: IFilm;
+
+  addFilm: (film: IFilm) => void;
+  deleteFilm: (filmid: number) => void;
 }
 
-const FilmReviews: React.FC<IPropsGlobal & any> = props => {
+const FilmReviews: React.FC<IPropsGlobal & { film_id: number }> = props => {
   const [reviews, saveReviews] = React.useState<any>([]);
 
   const [displayNewReview, setDisplayNewReview] = React.useState(false);
@@ -115,9 +119,35 @@ const FilmReviews: React.FC<IPropsGlobal & any> = props => {
           const rIndex = reviews.findIndex((r: any) => r.id === review.review);
           if (rIndex !== -1) reviews.splice(rIndex, 1);
           saveReviews([...reviews]);
+          console.log("reviews" + reviews.length);
+          if (reviews.length === 0) {
+            console.log("Going to remove");
+            removeFilm(props.actualFilm.id);
+          }
         });
       }
     });
+  };
+
+  const removeFilm = (filmid: number) => {
+    console.log("Going to fetch");
+    fetch(`http://localhost:8080/api/films/${filmid}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + props.token
+      }
+    }).then(response => {
+      if (response.ok) {
+        response.json().then((_film: any) => {
+          console.log("Successfully deleted");
+          props.deleteFilm(filmid);
+        }).catch((err) => { throw err });
+        ;
+      } else {
+        console.log(response);
+      }
+    }).catch((err) => console.log("Mario" + err));
   };
 
   const reviewFieldChecker = () => {
@@ -165,8 +195,16 @@ const FilmReviews: React.FC<IPropsGlobal & any> = props => {
                   poster_path: props.actualFilm.poster_path,
                   release_date: props.actualFilm.release_date,
                   original_title: props.actualFilm.original_title,
-                  original_language:props.actualFilm.original_language
+                  original_language: props.actualFilm.original_language
                 })
+              }).then(response => {
+                if (response.ok) {
+                  response.json().then(result => {
+                    if (!result.included) {
+                      props.addFilm(result);
+                    }
+                  });
+                }
               });
             }
           });
@@ -257,37 +295,12 @@ const FilmReviews: React.FC<IPropsGlobal & any> = props => {
                     <div className="column is-10">
                       <div className="control">
                         <div className="select is-rounded">
-                          <select onChange={updateRating}>
-                            <option
-                              value="1"
-                              selected={rating === 1 ? true : false}
-                            >
-                              Bad
-                            </option>
-                            <option
-                              value="2"
-                              selected={rating === 2 ? true : false}
-                            >
-                              Not bad
-                            </option>
-                            <option
-                              value="3"
-                              selected={rating === 3 ? true : false}
-                            >
-                              Regular
-                            </option>
-                            <option
-                              value="4"
-                              selected={rating === 4 ? true : false}
-                            >
-                              Good
-                            </option>
-                            <option
-                              value="5"
-                              selected={rating === 5 ? true : false}
-                            >
-                              Excellent
-                            </option>
+                          <select value={rating} onChange={updateRating}>
+                            <option value="1">Bad</option>
+                            <option value="2">Not bad</option>
+                            <option value="3">Regular</option>
+                            <option value="4">Good</option>
+                            <option value="5">Excellent</option>
                           </select>
                         </div>
                       </div>
@@ -349,7 +362,10 @@ const FilmReviews: React.FC<IPropsGlobal & any> = props => {
                           <figure className="image">
                             <Link to={`/profile/${r.user_id}`}>
                               <img
-                              css={css`max-width:30% !important;min-width:100px !important`}
+                                css={css`
+                                  max-width: 30% !important;
+                                  min-width: 100px !important;
+                                `}
                                 src={require("../img/" + r.profile_avatar)}
                               />
                             </Link>
@@ -473,7 +489,12 @@ const mapStateToProps = (globalState: IGlobalState) => ({
   films: globalState.token,
   actualFilm: globalState.actualFilm
 });
+
+const mapDispatchToProps = {
+  addFilm: actions.addFilm,
+  deleteFilm: actions.deleteFilm
+};
 export default connect(
   mapStateToProps,
-  null
+  mapDispatchToProps
 )(FilmReviews);

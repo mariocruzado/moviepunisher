@@ -9,28 +9,38 @@ const model = require("../models/filmModel");
 
 //Retrieve local films
 controller.getFilms = (req, res, _next) => {
-    try {
-        model.getFilms().then(results => {
-            res.send(results);
-        }).catch((err) => { throw err });
-    } catch {
-        res.status(401).send({error: 401, message: 'Unauthorized'});
-    }
-}
+  try {
+    model
+      .getFilms()
+      .then(results => {
+        res.send(results);
+      })
+      .catch(err => {
+        throw err;
+      });
+  } catch {
+    res.status(401).send({ error: 401, message: "Unauthorized" });
+  }
+};
 
 //Get film info
 controller.getFilm = (req, res, _next) => {
-    const token = req.headers.authorization.split(" ")[1];
+  const token = req.headers.authorization.split(" ")[1];
 
-    try {
-        const vToken = jwt.verify(token, jwtSecret);
-        model.getFilm(req.params.id).then(result => {
-            res.send(result[0]);
-        }).catch((err) => { throw err });
-    } catch (e) {
-        res.status(400).send({error: 400, message: e });
-    }
-}
+  try {
+    const vToken = jwt.verify(token, jwtSecret);
+    model
+      .getFilm(req.params.id)
+      .then(result => {
+        res.send(result[0]);
+      })
+      .catch(err => {
+        throw err;
+      });
+  } catch (e) {
+    res.status(400).send({ error: 400, message: e });
+  }
+};
 
 //Add film to local database
 controller.addFilm = (req, res, _next) => {
@@ -43,10 +53,10 @@ controller.addFilm = (req, res, _next) => {
         .checkIfFilmExists(req.params.id)
         .then(result => {
           if (result.length > 0) {
-            res.send({ id: result.id, message: 'Film is in local list'});
+            res.send({ included: true, message: "Film is in local list" });
           } else {
             const filmData = {
-              id: req.params.id,
+              id: +req.params.id,
               ...(req.body.poster_path && {
                 poster_path: req.body.poster_path
               }),
@@ -66,7 +76,7 @@ controller.addFilm = (req, res, _next) => {
             model
               .addFilm(filmData)
               .then(_result => {
-                res.send({film: filmData.id, message: 'Added successfully'});
+                res.send(filmData);
               })
               .catch(err => {
                 throw err;
@@ -81,6 +91,26 @@ controller.addFilm = (req, res, _next) => {
     }
   } catch (e) {
     res.status(401).send({ error: 401, message: "Unauthorized" });
+  }
+};
+
+controller.deleteFilm = (req, res, _next) => {
+  const token = req.headers.authorization.split(" ")[1];
+  try {
+    const vToken = jwt.verify(token, jwtSecret);
+    if (req.params.id && !isNaN(req.params.id)) {
+      model.deleteFilm(req.params.id)
+        .then(_result => {
+          res.send({ film: req.params.id, status: "Deleted" });
+        })
+        .catch(err => {
+          throw err;
+        });
+    } else {
+      throw err;
+    }
+  } catch {
+    res.status(400).send({ error: 400, message: "Bad Request" });
   }
 };
 

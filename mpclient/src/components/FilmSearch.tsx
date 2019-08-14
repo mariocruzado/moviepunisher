@@ -7,9 +7,7 @@ import { Link } from "react-router-dom";
 //Enabling Emotion
 /** @jsx jsx */
 import { css, jsx } from "@emotion/core";
-import { searchBoxChecker, alphanumericChecker } from "../tools/fieldChecker";
-import { IPages } from "../interfaces";
-import FilmLocal from "./FilmLocal";
+import { IPages, IFilm } from '../interfaces';
 
 const formatDate = () => {
   const today = new Date();
@@ -41,11 +39,16 @@ const FilmSearch: React.FC<IPropsGlobal> = props => {
 
   const [calculateAvg, setCalculateAvg] = React.useState(false);
   const [header, setHeader] = React.useState("");
+  const [films, saveFilms] = React.useState<IFilm[] | any>([]);
+  const [currentPage, setCurrentPage] = React.useState(1);
+  const [totalPages, setTotalPages] = React.useState(1);
+  const [currentQuery, setCurrentQuery] = React.useState<any>('');
+
   const defaultQuery = `discover/movie?primary_release_date.gte=2019-06-04&primary_release_date.lte=${formatDate()}`;
 
   //Get films by query
   const retrieveFilms = () => {
-    fetch(`${apiUrl}${props.query}&${apiKey}&page=${props.pageInfo.current}`, {
+    fetch(`${apiUrl}${props.query}&${apiKey}&page=${currentPage}`, {
       method: "GET",
       headers: { "Content-Type": "application/json" }
     })
@@ -55,22 +58,19 @@ const FilmSearch: React.FC<IPropsGlobal> = props => {
             .json()
             .then((films: any) => {
               if (films.total_results > 0) {
-                props.saveLastFilms(films.results);
+                saveFilms(films.results);
+                setTotalPages(films.total_pages);
+                if (props.query !== currentQuery) {
+                }
                 setCalculateAvg(true);
-                props.setPages({
-                  ...props.pageInfo,
-                  total: films.total_pages
-                });
-
+                setCurrentQuery(props.query);
                 if (props.query === defaultQuery)
                   setHeader("Popular Movies Now");
                 else setHeader(`Showing ${films.total_results} results`);
               } else {
-                props.saveLastFilms([]);
-                props.setPages({
-                  total: 1,
-                  current: 1
-                });
+                saveFilms([]);
+                setCurrentPage(1);
+                setTotalPages(1);
                 setHeader("Sorry! No results :(");
               }
             })
@@ -91,27 +91,18 @@ const FilmSearch: React.FC<IPropsGlobal> = props => {
     if (props.query) {
       retrieveFilms();
     }
-  }, [props.pageInfo.current, props.query]);
+  }, [currentPage, props.query]);
 
   const prevPage = () => {
-    if (props.pageInfo.current > 1) {
-      props.setPages({
-        ...props.pageInfo,
-        current: props.pageInfo.current - 1
-      });
-    }
+    if (currentPage > 1) setCurrentPage(p => p - 1);
   };
   const nextPage = () => {
-    if (props.pageInfo.current < props.pageInfo.total) {
-      props.setPages({
-        ...props.pageInfo,
-        current: props.pageInfo.current + 1
-      });
-    }
+    if (currentPage < totalPages) setCurrentPage(p => p + 1);
   };
 
   //AVG Ratings by reviews
   const getAvgReviews = (idsarray: any[]) => {
+    console.log("calculando");
     fetch("http://localhost:8080/api/reviews/film/avg/", {
       method: "POST",
       headers: {
@@ -123,27 +114,26 @@ const FilmSearch: React.FC<IPropsGlobal> = props => {
       .then(response => {
         if (response.ok) {
           response.json().then((reviewdata: any) => {
-            const films = props.storedFilms;
+            const filmsComplete = films;
             reviewdata.map((row: any) => {
               const { film_id, nReviews, average } = row;
-              const film = films.find(f => f.id === film_id);
+              const film = filmsComplete.find((f:IFilm) => f.id === film_id);
               film.nReviews = nReviews;
               film.average = average;
             });
-            props.saveLastFilms([...films]);
+            saveFilms([...filmsComplete]);
           });
         } else {
           console.log("not ok");
         }
-      })
-      .catch(e => console.log("Angel " + e));
+      });
     return null;
   };
 
   // React.useEffect(getLastFilms, []);
   React.useEffect(() => {
-    if (calculateAvg && props.storedFilms.length > 0) {
-      const idsarray = props.storedFilms.map(f => f.id);
+    if (calculateAvg && films.length > 0) {
+      const idsarray = films.map((f:IFilm) => f.id);
       getAvgReviews(idsarray);
       setCalculateAvg(false);
     }
@@ -157,11 +147,11 @@ const FilmSearch: React.FC<IPropsGlobal> = props => {
           css={css`
             position: absolute;
             top: 0px;
-            left:5px;
+            left: 5px;
           `}
         >
-            <Link to={'/'}>
-          <i className="fas fa-times-circle is-big has-text-light" />
+          <Link to={"/"}>
+            <i className="fas fa-times-circle is-big has-text-light" />
           </Link>
         </div>
         <div
@@ -174,48 +164,52 @@ const FilmSearch: React.FC<IPropsGlobal> = props => {
         >
           <h5>{header}</h5>
         </div>
-        {props.storedFilms.length > 0 && (<div className="columns is-multiline is-mobile is-centered">
-          {props.storedFilms.map(f => (
-            <Link to={`/${f.id}`} key={f.id}>
-              <div className="column is-three-quarters-mobile is-half-tablet is-half-desktop is-one-third-widescreen is-one-quarter-fullhd">
-                <div className="cellphone-container">
-                  <div className="movie">
-                    <div className="menu">
-                      <i className="fas fa-film" />
-                    </div>
-                    <img
-                      className="movie-img"
-                      src={
-                        f.poster_path
-                          ? `https://image.tmdb.org/t/p/w400/${f.poster_path}`
-                          : `http://roblucastaylor.com/wp-content/uploads/2017/07/cover-image-unavailable.jpg`
-                      }
-                    />
-
-                    <div className="text-movie-cont">
-                      <div className="mr-grid">
-                        <div className="col1">
-                          <h1 className="specialtitle">
-                            {f.original_title.length > 38
-                              ? f.original_title.substring(0, 35) + "..."
-                              : f.original_title}
-                          </h1>
-                          <ul className="movie-gen">
-                            <li>
-                              Released: {f.release_date?f.release_date:'?'} / Country:{" "}
-                              {f.original_language.toUpperCase()}
-                            </li>
-                          </ul>
-                        </div>
+        {films.length > 0 && (
+          <div className="columns is-multiline is-mobile is-centered">
+            {films.map((f:IFilm) => (
+              <Link to={`/${f.id}`} key={f.id}>
+                <div className="column is-three-quarters-mobile is-half-tablet is-half-desktop is-one-third-widescreen is-one-quarter-fullhd">
+                  <div className="cellphone-container">
+                    <div className="movie">
+                      <div className="menu">
+                        <i className="fas fa-film" />
                       </div>
-                      <div className="mr-grid">
-                        <div className="col2 movie-likes">
-                          <i className="fas fa-star" />
-                          <span>
-                            {" "}
-                            {f.average ? f.average.toFixed(1) : "Not rated yet"}
-                          </span>
-                          {/* {(() => {
+                      <img
+                        className="movie-img"
+                        src={
+                          f.poster_path
+                            ? `https://image.tmdb.org/t/p/w400/${f.poster_path}`
+                            : `http://roblucastaylor.com/wp-content/uploads/2017/07/cover-image-unavailable.jpg`
+                        }
+                      />
+
+                      <div className="text-movie-cont">
+                        <div className="mr-grid">
+                          <div className="col1">
+                            <h1 className="specialtitle">
+                              {f.original_title.length > 38
+                                ? f.original_title.substring(0, 35) + "..."
+                                : f.original_title}
+                            </h1>
+                            <ul className="movie-gen">
+                              <li>
+                                Released:{" "}
+                                {f.release_date ? f.release_date : "?"} /
+                                Country: {f.original_language.toUpperCase()}
+                              </li>
+                            </ul>
+                          </div>
+                        </div>
+                        <div className="mr-grid">
+                          <div className="col2 movie-likes">
+                            <i className="fas fa-star" />
+                            <span>
+                              {" "}
+                              {f.average
+                                ? f.average.toFixed(1)
+                                : "Not rated yet"}
+                            </span>
+                            {/* {(() => {
                             const result: any = [];
                             for (let j = 0; j < parseInt(f.average); j++) {
                               result.push(
@@ -227,113 +221,107 @@ const FilmSearch: React.FC<IPropsGlobal> = props => {
                             }
                             return result;
                           })()} */}
+                          </div>
+                          <div className="col2">
+                            <ul className="movie-likes">
+                              <li>
+                                <span>{f.nReviews ? f.nReviews : 0} </span>
+                                <i className="fas fa-newspaper" />
+                              </li>
+                            </ul>
+                          </div>
                         </div>
-                        <div className="col2">
-                          <ul className="movie-likes">
-                            <li>
-                              <span>{f.nReviews ? f.nReviews : 0} </span>
-                              <i className="fas fa-newspaper" />
-                            </li>
-                          </ul>
-                        </div>
-                      </div>
-                      <div className="mr-grid">
-                        <div className="col1">
-                          <p className="movie-description">
-                            {f.overview.length > 200
-                              ? f.overview.substring(0, 197) + "..."
-                              : f.overview}
-                          </p>
+                        <div className="mr-grid">
+                          <div className="col1">
+                            <p className="movie-description">
+                              {f.overview.length > 200
+                                ? f.overview.substring(0, 197) + "..."
+                                : f.overview}
+                            </p>
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            </Link>
-          ))}
-          {/* Paginate */}
-          {props.pageInfo.total > 1 && (
-            <div
-              css={css`
-                width: 100%;
-              `}
-            >
+              </Link>
+            ))}
+            {/* Paginate */}
+            {totalPages > 1 && (
               <div
-                className="box has-background-grey-darker has-text-light is-pulled-right"
                 css={css`
-                  margin-right: 91px !important;
-                  margin-bottom: 20px;
+                  width: 100%;
                 `}
               >
-                {props.pageInfo.current > 1 && (
-                  <a
-                    onClick={prevPage}
-                    css={css`
-                      margin-right: 5px;
-                    `}
-                  >
-                    <i className="fas fa-chevron-left has-text-light" />
-                  </a>
-                )}
-                {props.pageInfo.current > 1 && (
-                  <a
-                    css={css`
-                      font-size: 0.8em;
-                    `}
-                    onClick={() =>
-                      props.setPages({
-                        ...props.pageInfo,
-                        current: 1
-                      })
-                    }
-                    className="has-text-light"
-                  >
-                    1
-                  </a>
-                )}
-
-                <span
+                <div
+                  className="box has-background-grey-darker has-text-light is-pulled-right"
                   css={css`
-                    margin-left: 10px;
-                    margin-right: 10px;
-                    font-weight: bolder;
+                    margin-right: 91px !important;
+                    margin-bottom: 20px;
                   `}
-                  className="has-text-link"
                 >
-                  {props.pageInfo.current}
-                </span>
-                {props.pageInfo.current !== props.pageInfo.total && (
-                  <a
+                  {currentPage > 1 && (
+                    <a
+                      onClick={prevPage}
+                      css={css`
+                        margin-right: 5px;
+                      `}
+                    >
+                      <i className="fas fa-chevron-left has-text-light" />
+                    </a>
+                  )}
+                  {currentPage > 1 && (
+                    <a
+                      css={css`
+                        font-size: 0.8em;
+                      `}
+                      onClick={() =>
+                        setCurrentPage(1)
+                      }
+                      className="has-text-light"
+                    >
+                      1
+                    </a>
+                  )}
+
+                  <span
                     css={css`
-                      font-size: 0.8em;
+                      margin-left: 10px;
+                      margin-right: 10px;
+                      font-weight: bolder;
                     `}
-                    className="has-text-light"
-                    onClick={() =>
-                      props.setPages({
-                        ...props.pageInfo,
-                        current: props.pageInfo.total
-                      })
-                    }
+                    className="has-text-link"
                   >
-                    {props.pageInfo.total}
-                  </a>
-                )}
-                {props.pageInfo.current !== props.pageInfo.total && (
-                  <a
-                    onClick={nextPage}
-                    css={css`
-                      margin-left: 5px;
-                    `}
-                  >
-                    <i className="fas fa-chevron-right has-text-light" />
-                  </a>
-                )}
+                    {currentPage}
+                  </span>
+                  {currentPage !== totalPages && (
+                    <a
+                      css={css`
+                        font-size: 0.8em;
+                      `}
+                      className="has-text-light"
+                      onClick={() =>
+setCurrentPage(totalPages)
+                      }
+                    >
+                      {totalPages}
+                    </a>
+                  )}
+                  {currentPage !== totalPages && (
+                    <a
+                      onClick={nextPage}
+                      css={css`
+                        margin-left: 5px;
+                      `}
+                    >
+                      <i className="fas fa-chevron-right has-text-light" />
+                    </a>
+                  )}
+                </div>
               </div>
-            </div>
-          )}
-        </div>)}
-        
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

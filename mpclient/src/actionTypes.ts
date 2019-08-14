@@ -1,4 +1,4 @@
-import { IPages, IFilm } from './interfaces';
+import { IPages, IFilm } from "./interfaces";
 type TSetToken = {
   type: "SET_TOKEN";
   newToken: string;
@@ -28,12 +28,24 @@ type TSaveFilmPages = {
 };
 
 type TSaveFilm = {
-  type:'SAVE_FILM';
+  type: "SAVE_FILM";
   actualFilm: IFilm;
-}
+};
+
+type TAddFilm = {
+  type: "ADD_FILM";
+  newFilm: IFilm;
+};
+
+type TDeleteFilm = {
+  type: "DELETE_FILM";
+  filmId: number;
+};
 
 export type TAction =
-  TSaveFilm
+  | TDeleteFilm
+  | TAddFilm
+  | TSaveFilm
   | TSaveFilmPages
   | TSetToken
   | TSetLoginExpire

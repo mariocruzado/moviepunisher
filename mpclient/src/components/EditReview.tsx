@@ -5,8 +5,11 @@ import { IGlobalState } from "../reducers/global";
 //Enabling Emotion
 /** @jsx jsx */
 import { css, jsx } from "@emotion/core";
-import { RouteComponentProps, Link } from 'react-router-dom';
-import { reviewContentChecker, reviewTitleChecker } from '../tools/fieldChecker';
+import { RouteComponentProps, Link } from "react-router-dom";
+import {
+  reviewContentChecker,
+  reviewTitleChecker
+} from "../tools/fieldChecker";
 
 interface IPropsGlobal {
   token: string;
@@ -17,7 +20,7 @@ const EditReview: React.FC<IPropsGlobal & any> = props => {
 
   const [reviewTitle, setReviewTitle] = React.useState("");
   const [reviewContent, setReviewContent] = React.useState("");
-  const [rating, setRating] = React.useState(3);
+  const [rating, setRating] = React.useState();
 
   const [label, setLabel] = React.useState(false);
 
@@ -46,8 +49,7 @@ const EditReview: React.FC<IPropsGlobal & any> = props => {
     setRating(event.currentTarget.value);
   };
 
-
-  const getReviewData = (reviewid:number) => {
+  const getReviewData = (reviewid: number) => {
     fetch("http://localhost:8080/api/reviews/" + reviewid, {
       method: "GET",
       headers: {
@@ -64,10 +66,10 @@ const EditReview: React.FC<IPropsGlobal & any> = props => {
         });
     });
   };
-  const updateReviewArray = (reviewid:number, nReview:any) => {
-    const rToChange = props.rlist.findIndex((r:any) => r.id === reviewid);
+  const updateReviewArray = (reviewid: number, nReview: any) => {
+    const rToChange = props.rlist.findIndex((r: any) => r.id === reviewid);
     props.rlist[rToChange] = nReview;
-  }
+  };
 
   const reviewFieldChecker = () => {
     let res = false;
@@ -76,32 +78,32 @@ const EditReview: React.FC<IPropsGlobal & any> = props => {
     return res;
   };
 
-  const updateReview = (reviewid:number) => {
+  const updateReview = (reviewid: number) => {
     if (reviewFieldChecker()) {
       fetch("http://localhost:8080/api/reviews/" + reviewid, {
-          method:'PUT',
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: "Bearer " + props.token         
-          },
-          body: JSON.stringify({
-              rating: rating,
-              content: reviewContent
-          })
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + props.token
+        },
+        body: JSON.stringify({
+          rating: rating,
+          content: reviewContent
+        })
       }).then(response => {
-          if (response.ok)
+        if (response.ok)
           response.json().then((review: any) => {
-              updateReviewArray(review.id, review);
-              props.close_edit();
-          })
-      })
+            updateReviewArray(review.id, review);
+            props.close_edit();
+          });
+      });
     } else {
       setLabel(true);
     }
-  }
+  };
 
   React.useEffect(() => getReviewData(props.review_id), [props.review_id]);
-  
+
   return (
     <div className="box">
       <div className="control field">
@@ -126,22 +128,12 @@ const EditReview: React.FC<IPropsGlobal & any> = props => {
           <div className="column is-10">
             <div className="control">
               <div className="select is-rounded">
-                <select onChange={updateRating}>
-                  <option value="1" selected={reviewData.rating === 1 ? true : false}>
-                    Bad
-                  </option>
-                  <option value="2" selected={reviewData.rating === 2 ? true : false}>
-                    Not bad
-                  </option>
-                  <option value="3" selected={reviewData.rating === 3 ? true : false}>
-                    Regular
-                  </option>
-                  <option value="4" selected={reviewData.rating === 4 ? true : false}>
-                    Good
-                  </option>
-                  <option value="5" selected={reviewData.rating === 5 ? true : false}>
-                    Excellent
-                  </option>
+                <select value={rating} onChange={updateRating}>
+                  <option value="1">Bad</option>
+                  <option value="2">Not bad</option>
+                  <option value="3">Regular</option>
+                  <option value="4">Good</option>
+                  <option value="5">Excellent</option>
                 </select>
               </div>
             </div>
@@ -170,11 +162,14 @@ const EditReview: React.FC<IPropsGlobal & any> = props => {
         <hr />
         <div className="field">
           <div className="control buttons">
-            <button onClick={() => updateReview(props.review_id)} className="button">
+            <button
+              onClick={() => updateReview(props.review_id)}
+              className="button"
+            >
               Update
             </button>
             <button className="button is-danger" onClick={props.close_edit}>
-              {'Back to reviews'}
+              {"Back to reviews"}
             </button>
           </div>
         </div>

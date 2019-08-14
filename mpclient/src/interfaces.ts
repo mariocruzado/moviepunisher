@@ -30,4 +30,7 @@ export interface IUser {
 export interface IPages {
     current: number;
     total: number;
+    sortMode:number;
+    sortOrder:number;
+    itemsPerPage:number;
 }
