@@ -1,7 +1,6 @@
 import React from "react";
 import { IGlobalState } from "../reducers/global";
 import { connect } from "react-redux";
-import defaultProfile from "../img/classic.png";
 
 //Enabling Emotion
 /** @jsx jsx */
@@ -15,6 +14,7 @@ import {
 } from "../tools/fieldChecker";
 import { IUser } from "../interfaces";
 import { RouteComponentProps, Link } from "react-router-dom";
+import { alphanumericChecker } from "../tools/fieldChecker";
 
 interface IPropsGlobal {}
 const Register: React.FC<IPropsGlobal & RouteComponentProps> = props => {
@@ -40,7 +40,10 @@ const Register: React.FC<IPropsGlobal & RouteComponentProps> = props => {
   };
 
   const updateUsername = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (!event.currentTarget.value.includes(" "))
+    if (
+      !event.currentTarget.value.includes(" ") &&
+      alphanumericChecker(event.currentTarget.value)
+    )
       setUsername(event.currentTarget.value);
   };
 
@@ -56,6 +59,12 @@ const Register: React.FC<IPropsGlobal & RouteComponentProps> = props => {
   const updateSelectedProfile = (event: React.ChangeEvent<any>) => {
     setSelectedProfileId(event.currentTarget.value);
   };
+
+    //To set enter key function without submit default
+    const onFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
+      registerUser();
+    };
 
   const getProfiles = () => {
     fetch(`http://localhost:8080/api/users/all/profiles`, {
@@ -113,6 +122,7 @@ const Register: React.FC<IPropsGlobal & RouteComponentProps> = props => {
         min-width: 50%;
       `}
     >
+    <form onSubmit={onFormSubmit}>
       <div className="field">
         <h1 className="title has-text-black">New User</h1>
         <hr />
@@ -234,7 +244,7 @@ const Register: React.FC<IPropsGlobal & RouteComponentProps> = props => {
           <button
             className="button is-link"
             disabled={!checkFields()}
-            onClick={registerUser}
+            type="submit"
           >
             Sign Up!
           </button>
@@ -245,6 +255,7 @@ const Register: React.FC<IPropsGlobal & RouteComponentProps> = props => {
           </Link>
         </div>
       </div>
+      </form>
     </div>
   );
 };

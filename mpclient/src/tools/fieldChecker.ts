@@ -35,7 +35,7 @@ export const commentChecker = (comment: string) => {
 
 export const reviewContentChecker = (content: string) => {
   let res = false;
-  if (content.length >= 100 && content.length <= 1500) res = true;
+  if (content.length >= 25 && content.length <= 1500) res = true;
   return res;
 };
 
@@ -54,6 +54,13 @@ export const searchBoxChecker = (search: string) => {
 export const alphanumericChecker = (text: string) => {
   let res = false;
   const chars = /^[0-9a-zA-Z ]*$/;
+  if (text.match(chars)) res = true;
+  return res;
+};
+
+export const alphanumNoSpaces = (text: string) => {
+  let res = false;
+  const chars = /^[0-9a-zA-Z]*$/;
   if (text.match(chars)) res = true;
   return res;
 };

@@ -380,8 +380,13 @@ h1.specialtitle {
     background-position: -100% 10% !important;
   }
 }
-
+@media screen and (max-width:766px) {
+  .localfilms-list {
+    margin-top:100px !important;
+  }
+}
 @media screen and (max-width: 850px) {
+
   .movie_card {
     width: 92%;
     margin: 70px auto;

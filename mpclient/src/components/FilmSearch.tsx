@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback } from "react";
+import React from "react";
 import { IGlobalState } from "../reducers/global";
 import * as actions from "../actions";
 import { connect } from "react-redux";
@@ -7,7 +7,7 @@ import { Link } from "react-router-dom";
 //Enabling Emotion
 /** @jsx jsx */
 import { css, jsx } from "@emotion/core";
-import { IPages, IFilm } from '../interfaces';
+import { IFilm } from "../interfaces";
 
 const formatDate = () => {
   const today = new Date();
@@ -24,12 +24,8 @@ const formatDate = () => {
 interface IPropsGlobal {
   token: string;
   query: string;
-  storedFilms: any[];
-  pageInfo: IPages;
 
-  saveLastFilms: (films: any[]) => void;
   saveQuery: (query: string) => void;
-  setPages: (pages: IPages) => void;
 }
 
 //https://api.themoviedb.org/3/search/movie?api_key=51c725de6ddb9024213b00473cda137b&query=mac
@@ -42,12 +38,15 @@ const FilmSearch: React.FC<IPropsGlobal> = props => {
   const [films, saveFilms] = React.useState<IFilm[] | any>([]);
   const [currentPage, setCurrentPage] = React.useState(1);
   const [totalPages, setTotalPages] = React.useState(1);
-  const [currentQuery, setCurrentQuery] = React.useState<any>('');
+  const [currentQuery, setCurrentQuery] = React.useState<any>("");
 
+  const [noResults, setNoResults] = React.useState(false);
   const defaultQuery = `discover/movie?primary_release_date.gte=2019-06-04&primary_release_date.lte=${formatDate()}`;
 
   //Get films by query
   const retrieveFilms = () => {
+    saveFilms([]);
+    setHeader('');
     fetch(`${apiUrl}${props.query}&${apiKey}&page=${currentPage}`, {
       method: "GET",
       headers: { "Content-Type": "application/json" }
@@ -66,12 +65,13 @@ const FilmSearch: React.FC<IPropsGlobal> = props => {
                 setCurrentQuery(props.query);
                 if (props.query === defaultQuery)
                   setHeader("Popular Movies Now");
-                else setHeader(`Showing ${films.total_results} results`);
+                else setHeader(`${films.total_results} results found`);
+                setNoResults(false);
               } else {
                 saveFilms([]);
                 setCurrentPage(1);
                 setTotalPages(1);
-                setHeader("Sorry! No results :(");
+                setNoResults(true);
               }
             })
             .catch(e => console.log(e));
@@ -81,7 +81,6 @@ const FilmSearch: React.FC<IPropsGlobal> = props => {
   };
 
   React.useEffect(() => {
-    setHeader("Loading...");
     if (!props.query) {
       props.saveQuery(defaultQuery);
     }
@@ -110,44 +109,44 @@ const FilmSearch: React.FC<IPropsGlobal> = props => {
         Authorization: "Bearer " + props.token
       },
       body: JSON.stringify(idsarray)
-    })
-      .then(response => {
-        if (response.ok) {
-          response.json().then((reviewdata: any) => {
-            const filmsComplete = films;
-            reviewdata.map((row: any) => {
-              const { film_id, nReviews, average } = row;
-              const film = filmsComplete.find((f:IFilm) => f.id === film_id);
-              film.nReviews = nReviews;
-              film.average = average;
-            });
-            saveFilms([...filmsComplete]);
+    }).then(response => {
+      if (response.ok) {
+        response.json().then((reviewdata: any) => {
+          const filmsComplete = films;
+          reviewdata.map((row: any) => {
+            const { film_id, nReviews, average } = row;
+            const film = filmsComplete.find((f: IFilm) => f.id === film_id);
+            film.nReviews = nReviews;
+            film.average = average;
           });
-        } else {
-          console.log("not ok");
-        }
-      });
+          saveFilms([...filmsComplete]);
+        });
+      } else {
+        console.log("not ok");
+      }
+    });
     return null;
   };
 
   // React.useEffect(getLastFilms, []);
   React.useEffect(() => {
     if (calculateAvg && films.length > 0) {
-      const idsarray = films.map((f:IFilm) => f.id);
+      const idsarray = films.map((f: IFilm) => f.id);
       getAvgReviews(idsarray);
       setCalculateAvg(false);
     }
   }, [calculateAvg]);
 
   return (
-    <div>
+    <div id="top">
       {/* Films listed */}
       <div className="container has-background-grey">
         <div
           css={css`
             position: absolute;
-            top: 0px;
-            left: 5px;
+            top: 10px;
+            left: 15px;
+            z-index:200 !important;
           `}
         >
           <Link to={"/"}>
@@ -155,18 +154,32 @@ const FilmSearch: React.FC<IPropsGlobal> = props => {
           </Link>
         </div>
         <div
-          className="box has-text-centered"
+          className="card has-text-centered"
           css={css`
             background-color: rgb(60, 60, 60) !important;
             color: rgb(255, 222, 255) !important;
             border-radius: 0px !important;
+            padding:10px;
           `}
         >
-          <h5>{header}</h5>
+          {!noResults && films.length <= 0 && (
+            <button className="button is-dark is-loading is-medium"></button>
+          )}
+          {!noResults && <h5>{header}</h5>}
+          {noResults && (
+              <div css={css`display:flex !important;justify-content:center !important;`}>
+                <figure className="image is-128x128">
+                  <img
+                    src={require("../img/notfound.svg")}
+                    alt="Sorry!"
+                  />
+                </figure>
+              </div>
+          )}
         </div>
         {films.length > 0 && (
           <div className="columns is-multiline is-mobile is-centered">
-            {films.map((f:IFilm) => (
+            {films.map((f: IFilm) => (
               <Link to={`/${f.id}`} key={f.id}>
                 <div className="column is-three-quarters-mobile is-half-tablet is-half-desktop is-one-third-widescreen is-one-quarter-fullhd">
                   <div className="cellphone-container">
@@ -262,6 +275,7 @@ const FilmSearch: React.FC<IPropsGlobal> = props => {
                 >
                   {currentPage > 1 && (
                     <a
+                      href="#top"
                       onClick={prevPage}
                       css={css`
                         margin-right: 5px;
@@ -272,12 +286,11 @@ const FilmSearch: React.FC<IPropsGlobal> = props => {
                   )}
                   {currentPage > 1 && (
                     <a
+                      href="#top"
                       css={css`
                         font-size: 0.8em;
                       `}
-                      onClick={() =>
-                        setCurrentPage(1)
-                      }
+                      onClick={() => setCurrentPage(1)}
                       className="has-text-light"
                     >
                       1
@@ -296,19 +309,19 @@ const FilmSearch: React.FC<IPropsGlobal> = props => {
                   </span>
                   {currentPage !== totalPages && (
                     <a
+                      href="#top"
                       css={css`
                         font-size: 0.8em;
                       `}
                       className="has-text-light"
-                      onClick={() =>
-setCurrentPage(totalPages)
-                      }
+                      onClick={() => setCurrentPage(totalPages)}
                     >
                       {totalPages}
                     </a>
                   )}
                   {currentPage !== totalPages && (
                     <a
+                      href="#top"
                       onClick={nextPage}
                       css={css`
                         margin-left: 5px;
@@ -328,16 +341,12 @@ setCurrentPage(totalPages)
 };
 
 const mapStateToProps = (globalState: IGlobalState) => ({
-  storedFilms: globalState.storedFilms,
   token: globalState.token,
-  query: globalState.saveQuery,
-  pageInfo: globalState.storedPages
+  query: globalState.saveQuery
 });
 
 const mapDispatchToProps = {
-  saveLastFilms: actions.saveLastFilms,
-  saveQuery: actions.saveQuery,
-  setPages: actions.savePages
+  saveQuery: actions.saveQuery
 };
 
 export default connect(

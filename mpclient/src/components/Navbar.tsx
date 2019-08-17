@@ -51,6 +51,12 @@ const Navbar: React.FC<IPropsGlobal & RouteComponentProps<any>> = props => {
     }
   };
 
+  //Enter event for button inside the form
+  const onFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    searchFilms(search);
+  };
+
   const logOut = () => {
     props.reset();
     localStorage.removeItem("token");
@@ -87,6 +93,7 @@ const Navbar: React.FC<IPropsGlobal & RouteComponentProps<any>> = props => {
           />
         </a>
         <div className="navbar-item">
+          <form onSubmit={onFormSubmit}>
           <div className="field has-addons is-centered">
             <div className="control">
               <input
@@ -100,11 +107,12 @@ const Navbar: React.FC<IPropsGlobal & RouteComponentProps<any>> = props => {
               />
             </div>
             <div className="control">
-              <a className="button" onClick={() => searchFilms(search)}>
+              <button className="button" type="submit">
                 <i className="fas fa-search" />
-              </a>
+              </button>
             </div>
           </div>
+          </form>
         </div>
         <a
           role="button"

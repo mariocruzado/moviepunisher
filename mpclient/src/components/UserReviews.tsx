@@ -67,8 +67,9 @@ const UserReviews: React.FC<IPropsGlobal & any> = props => {
         </ul>
       </div>
       {display === "reviews" && (
-        <div>
+        <div id="top">
           {reviews.length > 0 && (
+            // Pagination
             <div
               className="card has-background-dark"
               css={css`
@@ -81,73 +82,13 @@ const UserReviews: React.FC<IPropsGlobal & any> = props => {
               `}
             >
               <div className="columns">
-                <div className="column is-6">
+                <div className="column is-one-fifth">
                   Showing: {(currentPage - 1) * 5 + 1} -{" "}
                   {currentPage === totalPages
                     ? reviews.length
                     : currentPage * 5}{" "}
                   (of:{"  "}
                   {reviews.length})
-                </div>
-                <div className="column is-6">
-                  {/* Paginate */}
-                  {totalPages > 1 && (
-                    <div className="is-pulled-right">
-                      {currentPage > 1 && (
-                        <a
-                          onClick={prevPage}
-                          css={css`
-                            margin-right: 5px;
-                          `}
-                        >
-                          <i className="fas fa-chevron-left has-text-light" />
-                        </a>
-                      )}
-                      {currentPage > 1 && (
-                        <a
-                          css={css`
-                            font-size: 0.8em;
-                          `}
-                          onClick={() => setCurrentPage(1)}
-                          className="has-text-light"
-                        >
-                          1
-                        </a>
-                      )}
-
-                      <span
-                        css={css`
-                          margin-left: 10px;
-                          margin-right: 10px;
-                          font-weight: bolder;
-                        `}
-                        className="has-text-link"
-                      >
-                        {currentPage}
-                      </span>
-                      {currentPage !== totalPages && (
-                        <a
-                          css={css`
-                            font-size: 0.8em;
-                          `}
-                          className="has-text-light"
-                          onClick={() => setCurrentPage(totalPages)}
-                        >
-                          {totalPages}
-                        </a>
-                      )}
-                      {currentPage !== totalPages && (
-                        <a
-                          onClick={nextPage}
-                          css={css`
-                            margin-left: 5px;
-                          `}
-                        >
-                          <i className="fas fa-chevron-right has-text-light" />
-                        </a>
-                      )}
-                    </div>
-                  )}
                 </div>
               </div>
             </div>
@@ -186,8 +127,8 @@ const UserReviews: React.FC<IPropsGlobal & any> = props => {
                       {r.film_title}
                     </span>
                   </div>
-                  <div className="column">
-                    <span className="is-pulled-right has-text-light is-size-7">
+                  <div className="column has-text-right">
+                    <span className="has-text-light is-size-7">
                       {dateFormat(r.date, true)} (#{r.id})
                     </span>
                   </div>
@@ -257,6 +198,87 @@ const UserReviews: React.FC<IPropsGlobal & any> = props => {
               </div>
             </div>
           ))}
+          {totalPages > 1 && (
+            // Pagination
+            <div
+              className="card has-background-dark"
+              css={css`
+                padding: 10px;
+                width: 100% !important;
+                background-color: rgb(34, 34, 34) !important;
+                margin-top: -10px;
+                color: rgb(215, 215, 215) !important;
+                font-size: 0.8em;
+              `}
+            >
+              <div className="columns">
+                <div className="column">
+                  {/* Paginate */}
+                  {totalPages > 1 && (
+                    <div className="has-text-right">
+                      {currentPage > 1 && (
+                        <a
+                        href="#top"
+                          onClick={prevPage}
+                          css={css`
+                            margin-right: 5px;
+                          `}
+                        >
+                          <i className="fas fa-chevron-left has-text-light" />
+                        </a>
+                      )}
+                      {currentPage > 1 && (
+                        <a
+                        href="#top"
+                          css={css`
+                            font-size: 0.8em;
+                          `}
+                          onClick={() => setCurrentPage(1)}
+                          className="has-text-light"
+                        >
+                          1
+                        </a>
+                      )}
+
+                      <span
+                        css={css`
+                          margin-left: 10px;
+                          margin-right: 10px;
+                          font-weight: bolder;
+                        `}
+                        className="has-text-link"
+                      >
+                        {currentPage}
+                      </span>
+                      {currentPage !== totalPages && (
+                        <a
+                        href="#top"
+                          css={css`
+                            font-size: 0.8em;
+                          `}
+                          className="has-text-light"
+                          onClick={() => setCurrentPage(totalPages)}
+                        >
+                          {totalPages}
+                        </a>
+                      )}
+                      {currentPage !== totalPages && (
+                        <a
+                        href="#top"
+                          onClick={nextPage}
+                          css={css`
+                            margin-left: 5px;
+                          `}
+                        >
+                          <i className="fas fa-chevron-right has-text-light" />
+                        </a>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>

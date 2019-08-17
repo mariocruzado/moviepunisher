@@ -31,6 +31,14 @@ const Comments: React.FC<IPropsGlobal & any> = props => {
     }
   };
 
+  //Enter button to submit comment
+
+  const onFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    addComment(props.review_id, comment);
+  };
+
+  //Decoding token for personal options
   const decodedToken = React.useMemo(() => {
     const dToken = jwt.decode(props.token);
     if (dToken !== null && typeof dToken !== "string") {
@@ -198,6 +206,7 @@ const Comments: React.FC<IPropsGlobal & any> = props => {
           ))}
 
           {/* //NEW COMMENT */}
+          <form onSubmit={onFormSubmit}>
           <article className="media">
             <div className="media-content">
               <div className="field">
@@ -213,7 +222,7 @@ const Comments: React.FC<IPropsGlobal & any> = props => {
               <div className="field">
                 <div className="control">
                   <button
-                    onClick={() => addComment(props.review_id, comment)}
+                    type="submit"
                     className="button"
                     css={css`
                       font-size: 0.78em;
@@ -231,6 +240,7 @@ const Comments: React.FC<IPropsGlobal & any> = props => {
               </div>
             </div>
           </article>
+          </form>
           {displayComments && (
             <div className="has-text-right">
               <a className="has-text-info is-size-7" onClick={switchDisplayC}>

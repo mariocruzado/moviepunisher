@@ -19,9 +19,8 @@ interface IPropsGlobal {
   setPages: (pages: IPages) => void;
 }
 const FilmLocal: React.FC<IPropsGlobal> = props => {
-  // const [props.storedFilms, setLocalFilms] = React.useState<any[]>([]);
   const [calculateAvg, setCalculateAvg] = React.useState<boolean>(false);
-  // const [props.pageInfo.total, setTotalPages] = React.useState(1);
+  const [ready, setReady] = React.useState(false);
 
   const updateItemsPerPage = (event: React.ChangeEvent<any>) => {
     const newpages = Math.ceil(
@@ -99,6 +98,7 @@ const FilmLocal: React.FC<IPropsGlobal> = props => {
             film.average = average;
           });
           props.saveLastFilms([...films]);
+          setReady(true);
         });
       } else {
         console.log("not ok");
@@ -168,6 +168,7 @@ const FilmLocal: React.FC<IPropsGlobal> = props => {
     props.pageInfo.sortOrder
   );
 
+  if (!ready) return null;
   return (
     <div>
       {props.storedFilms.length <= 0 && (
@@ -319,11 +320,12 @@ const FilmLocal: React.FC<IPropsGlobal> = props => {
           </div>
         </div>
       )}
-
+<div></div>
       <div
         css={css`
           margin-top: 50px;
         `}
+        className="localfilms-list"
       >
         <div className="columns is-multiline is-mobile is-centered">
           {paginate(

@@ -14,6 +14,7 @@ import { connect } from "react-redux";
 import "../tools/fieldChecker";
 import { usernameChecker, passwordChecker } from "../tools/fieldChecker";
 import { Link } from "react-router-dom";
+import { alphanumNoSpaces } from "../tools/fieldChecker";
 
 interface IPropsGlobal {
   expirationId: number;
@@ -29,10 +30,24 @@ const Login: React.FC<IPropsGlobal> = props => {
   const [label, setLabel] = React.useState("");
 
   //Updating users by filling the inputs
-  const updateUser = (event: React.ChangeEvent<HTMLInputElement>) =>
-    setUser(event.currentTarget.value);
-  const updatePass = (event: React.ChangeEvent<HTMLInputElement>) =>
-    setPass(event.currentTarget.value);
+  const updateUser = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (
+      !(event.currentTarget.value.charAt(0) === " ") &&
+      event.currentTarget.value.length < 50 &&
+      alphanumNoSpaces(event.currentTarget.value)
+    ) {
+      setUser(event.currentTarget.value);
+    }
+  };
+
+  const updatePass = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (
+      !(event.currentTarget.value.charAt(0) === " ") &&
+      event.currentTarget.value.length < 50
+    ) {
+      setPass(event.currentTarget.value);
+    }
+  };
 
   //Enable button to sign in
   const enableButton = () => {
@@ -79,6 +94,12 @@ const Login: React.FC<IPropsGlobal> = props => {
       .catch(e => console.log("Angel " + e));
   };
 
+  //To set enter key function without submit default
+  const onFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    auth();
+  };
+
   //Rendering component
   return (
     <div className="column is-5-tablet is-4-desktop is-3-widescreen">
@@ -88,67 +109,69 @@ const Login: React.FC<IPropsGlobal> = props => {
           box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.5) !important;
         `}
       >
-        <div className="field is-vcentered">
-          <div className="columns is-vcentered">
-            <h5 className="column has-text-info">Welcome</h5>
+        <form onSubmit={onFormSubmit}>
+          <div className="field is-vcentered">
+            <div className="columns is-vcentered">
+              <h5 className="column has-text-info">Welcome</h5>
+            </div>
           </div>
-        </div>
-        <div className="field">
-          <div className="control has-icons-left">
-            <input
-              type="text"
-              placeholder="username123"
-              className={`input ${usernameChecker(user) ? "is-success" : ""}`}
-              onChange={updateUser}
-              value={user}
-              required
-              data-testid="username_input"
-            />
-            <span className="icon is-small is-left">
-              <i className="fas fa-user" />
-            </span>
-          </div>
-        </div>
-        <div className="field">
-          <div className="control has-icons-left">
-            <input
-              type="password"
-              placeholder="*******"
-              className={`input ${passwordChecker(pass) ? "is-success" : ""}`}
-              onChange={updatePass}
-              value={pass}
-              data-testid="password_input"
-              required
-            />
-            <span className="icon is-small is-left">
-              <i className="fa fa-lock" />
-            </span>
-          </div>
-        </div>
-        {label && (
           <div className="field">
-            <small data-testid="invalid_span" className="has-text-danger">
-              {label}
-            </small>
+            <div className="control has-icons-left">
+              <input
+                type="text"
+                placeholder="username123"
+                className={`input ${usernameChecker(user) ? "is-success" : ""}`}
+                onChange={updateUser}
+                value={user}
+                required
+                data-testid="username_input"
+              />
+              <span className="icon is-small is-left">
+                <i className="fas fa-user" />
+              </span>
+            </div>
           </div>
-        )}
-        <div className="field columns">
-          <div className="column is-4">
-            <button
-              className="button is-link"
-              onClick={auth}
-              disabled={enableButton()}
-              data-testid="auth_button"
-            >
-              Login
-            </button>
+          <div className="field">
+            <div className="control has-icons-left">
+              <input
+                type="password"
+                placeholder="*******"
+                className={`input ${passwordChecker(pass) ? "is-success" : ""}`}
+                onChange={updatePass}
+                value={pass}
+                data-testid="password_input"
+                required
+              />
+              <span className="icon is-small is-left">
+                <i className="fa fa-lock" />
+              </span>
+            </div>
           </div>
-          <div className="column is-8 has-text-right">
-            <Link className="is-size-7" to={`/register`}>
-              New User? Register now!
-            </Link>
+          {label && (
+            <div className="field">
+              <small data-testid="invalid_span" className="has-text-danger">
+                {label}
+              </small>
+            </div>
+          )}
+          <div className="field columns">
+            <div className="column is-4">
+              <button
+                className="button is-link"
+                disabled={enableButton()}
+                type="submit"
+                data-testid="auth_button"
+              >
+                Login
+              </button>
+            </div>
+            <div className="column is-8 has-text-right">
+              <Link className="is-size-7" to={`/register`}>
+                New User? Register now!
+              </Link>
+            </div>
           </div>
-        </div>
+        </form>
       </div>
     </div>
   );

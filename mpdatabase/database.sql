@@ -36,7 +36,7 @@ CREATE TABLE review (
 	film_id INT NOT NULL,
 	user_id INT NOT NULL,
 	title VARCHAR(100) NOT NULL,
-	content VARCHAR(600),
+	content VARCHAR(2000),
 	rating TINYINT NOT NULL,
 	`date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	modifiedby INT NULL,

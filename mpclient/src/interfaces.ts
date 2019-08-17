@@ -10,6 +10,7 @@ export interface IFilm {
     overview:string;
     genres:[];
     tagline:string;
+    title:string;
     spoken_languages:[];
     runtime:number;
 }

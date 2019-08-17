@@ -16,7 +16,7 @@ import {
 import EditReview from "./EditReview";
 import * as actions from "../actions";
 import { IFilm } from "../interfaces";
-import { deleteFilm } from "../actions";
+import { paginate } from '../tools/pagination';
 
 interface IPropsGlobal {
   token: string;
@@ -39,6 +39,9 @@ const FilmReviews: React.FC<IPropsGlobal & { film_id: number }> = props => {
   const [reviewToEdit, setReviewToEdit] = React.useState(-1);
 
   const [label, setLabel] = React.useState(false);
+
+  const [currentPage, setCurrentPage] = React.useState(1);
+  const [totalPages, setTotalPages] = React.useState(1);
 
   const updateReviewTitle = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (
@@ -86,6 +89,8 @@ const FilmReviews: React.FC<IPropsGlobal & { film_id: number }> = props => {
       if (response.ok) {
         response.json().then((reviews: any) => {
           saveReviews(reviews);
+          const totp = Math.ceil(reviews.length / 4);
+          setTotalPages(totp);
         });
       }
     });
@@ -104,6 +109,7 @@ const FilmReviews: React.FC<IPropsGlobal & { film_id: number }> = props => {
   };
 
   React.useEffect(() => retrieveReviews(props.film_id), []);
+  React.useEffect(() => retrieveReviews(props.film_id), [reviews.length]);
 
   //Delete a review
   const deleteReview = (reviewid: number) => {
@@ -119,9 +125,8 @@ const FilmReviews: React.FC<IPropsGlobal & { film_id: number }> = props => {
           const rIndex = reviews.findIndex((r: any) => r.id === review.review);
           if (rIndex !== -1) reviews.splice(rIndex, 1);
           saveReviews([...reviews]);
-          console.log("reviews" + reviews.length);
+          setTotalPages(Math.ceil(reviews.length / 4));
           if (reviews.length === 0) {
-            console.log("Going to remove");
             removeFilm(props.actualFilm.id);
           }
         });
@@ -147,7 +152,7 @@ const FilmReviews: React.FC<IPropsGlobal & { film_id: number }> = props => {
       } else {
         console.log(response);
       }
-    }).catch((err) => console.log("Mario" + err));
+    })
   };
 
   const reviewFieldChecker = () => {
@@ -156,6 +161,12 @@ const FilmReviews: React.FC<IPropsGlobal & { film_id: number }> = props => {
       res = true;
     return res;
   };
+
+    //Enter event for button inside the form
+    const onFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
+      addReview();
+    };
 
   //Add a Review
   const addReview = () => {
@@ -176,11 +187,15 @@ const FilmReviews: React.FC<IPropsGlobal & { film_id: number }> = props => {
       }).then(response => {
         if (response.ok) {
           response.json().then((review: any) => {
-            saveReviews([review, ...reviews]);
+            reviews.unshift(review);
+
+            saveReviews([...reviews]);
             displayReviewForm();
             setReviewTitle("");
             setReviewContent("");
             setRating(3);
+            setTotalPages(Math.ceil(+reviews.length / 4));
+            setCurrentPage(1);
 
             //Save film in local database
             if (props.actualFilm) {
@@ -214,9 +229,16 @@ const FilmReviews: React.FC<IPropsGlobal & { film_id: number }> = props => {
       setLabel(true);
     }
   };
+  const nextPage = () => {
+    if (currentPage < totalPages) setCurrentPage(p => p + 1);
+  };
+  const prevPage = () => {
+    if (currentPage > 1) setCurrentPage(p => p - 1);
+  };
 
   return (
     <div
+    id="top"
       css={css`
         margin-top: 10px;
         margin: auto;
@@ -237,20 +259,7 @@ const FilmReviews: React.FC<IPropsGlobal & { film_id: number }> = props => {
             background-color: rgba(255, 255, 255, 0.8) !important;
           `}
         >
-          {reviews.length > 0 && (
-            <div>
-              <h1
-                className="title is-size-6"
-                css={css`
-                  margin-bottom: 20px;
-                  margin-left: 10px;
-                `}
-              >
-                Showing all reviews ({reviews.length})
-              </h1>
-            </div>
-          )}
-          {!checkIfReviewed() && !displayNewReview && (
+                    {!checkIfReviewed() && !displayNewReview && (
             <div
               className="has-text-left"
               css={css`
@@ -258,7 +267,7 @@ const FilmReviews: React.FC<IPropsGlobal & { film_id: number }> = props => {
               `}
             >
               <button
-                className="button is-success is-size-6"
+                className="button is-dark is-size-6"
                 onClick={displayReviewForm}
               >
                 <i
@@ -273,6 +282,7 @@ const FilmReviews: React.FC<IPropsGlobal & { film_id: number }> = props => {
           )}
           {displayNewReview && (
             <div>
+              <form onSubmit={onFormSubmit}>
               <div className="box">
                 <div className="control field">
                   <div className="columns">
@@ -318,7 +328,7 @@ const FilmReviews: React.FC<IPropsGlobal & { film_id: number }> = props => {
                           className={`textarea is-small has-fixed-size ${
                             label ? "is-danger" : ""
                           }`}
-                          placeholder="*Enter 100-1500 characters"
+                          placeholder="*Enter 25-1500 characters"
                           css={css`
                             width: 100%;
                           `}
@@ -329,7 +339,7 @@ const FilmReviews: React.FC<IPropsGlobal & { film_id: number }> = props => {
                   <hr />
                   <div className="field">
                     <div className="control buttons">
-                      <button onClick={addReview} className="button">
+                      <button type="submit" className="button">
                         Post Review
                       </button>
                       <button
@@ -342,17 +352,42 @@ const FilmReviews: React.FC<IPropsGlobal & { film_id: number }> = props => {
                   </div>
                 </div>
               </div>
+              </form>
               {reviews.length > 0 && <hr />}
             </div>
           )}
+           {/* Pagination */}
+        {reviews.length > 0 && (
+          <div
+            className="card has-background-light has-text-grey-dark"
+            css={css`
+              padding: 10px;
+              width: 100% !important;
+              margin-bottom: 5px;
+              font-size: 0.9em;
+              border-radius:10px;
+            `}
+          >
+            <div className="columns">
+              <div className="column">
+                Showing: {(currentPage - 1) * 4 + 1} -{" "}
+                {currentPage === totalPages
+                  ? reviews.length
+                  : currentPage * 4}{" "}
+                (of:{"  "}
+                {reviews.length})
+              </div>
+            </div>
+          </div>
+        )}
           {/* //Reviews */}
-          {reviews.map((r: any) => (
+          {paginate(reviews, currentPage, 4).map((r: any) => (
             <article className="media" key={r.id}>
               <div className="media-content">
                 <div className="content">
                   <div className="box">
                     <div className="columns">
-                      <div className="column is-2">
+                      <div className="column is-one-fifth">
                         <div
                           css={css`
                             display: flex;
@@ -372,7 +407,7 @@ const FilmReviews: React.FC<IPropsGlobal & { film_id: number }> = props => {
                           </figure>
                         </div>
                       </div>
-                      <div className="column is-4">
+                      <div className="column">
                         <h6 className="is-block">
                           <i>"{r.title}</i>"
                         </h6>
@@ -402,10 +437,10 @@ const FilmReviews: React.FC<IPropsGlobal & { film_id: number }> = props => {
                           </span>
                         )}
                       </div>
-                      <div className="column is-6">
+                      <div className="column">
                         {/* RIGHT BOX */}
                         <div className="columns">
-                          <div className="column is-5">
+                          <div className="column is-size-7">
                             {[...Array(parseInt(r.rating ? r.rating : 0))].map(
                               (i, j) => (
                                 <i
@@ -422,9 +457,9 @@ const FilmReviews: React.FC<IPropsGlobal & { film_id: number }> = props => {
                               />
                             ))}
                           </div>
-                          <div className="column is-4">
+                          <div className="column">
                             <small
-                              className="is-small"
+                              className="is-size-7"
                               css={css`
                                 margin: 5px;
                               `}
@@ -434,26 +469,23 @@ const FilmReviews: React.FC<IPropsGlobal & { film_id: number }> = props => {
                           </div>
                           {(decodedToken!.isAdmin ||
                             r.user_id === decodedToken!.id) && (
-                            <div className="column is-3">
+                            <div className="column is-one-quarter">
                               <div
                                 className="is-pulled-right"
                                 css={css`
                                   margin-right: 10px;
-                                  font-size: 0.8em;
+                                  font-size: 0.95em;
                                 `}
                               >
                                 <a onClick={() => editReview(r.id)}>
                                   <span className="icon is-small">
                                     <i className="fas fa-edit" />
-                                  </span>{" "}
-                                  <span>Edit</span>
+                                  </span>
                                 </a>{" "}
-                                {" | "}
                                 <a onClick={() => deleteReview(r.id)}>
                                   <span className="icon is-small has-text-danger">
                                     <i className="fa fa-trash" />
-                                  </span>{" "}
-                                  <span>Delete</span>
+                                  </span>
                                 </a>
                               </div>
                             </div>
@@ -478,6 +510,87 @@ const FilmReviews: React.FC<IPropsGlobal & { film_id: number }> = props => {
               </div>
             </article>
           ))}
+           {/* Pagination */}
+        {totalPages > 1 && (
+          <div
+            className="card has-background-light has-text-grey-dark"
+            css={css`
+              padding: 10px;
+              width: 100% !important;
+              margin-bottom: 5px;
+              margin-top: 5px;
+              font-size: 0.9em;
+              border-radius:8px;
+            `}
+          >
+            <div className="columns">
+              <div className="column">
+                {/* Paginate */}
+                {totalPages > 1 && (
+                  <div className="has-text-right">
+                    {currentPage > 1 && (
+                      <a
+                      href="#top"
+                        onClick={prevPage}
+                        css={css`
+                          margin-right: 5px;
+                        `}
+                      >
+                        <i className="fas fa-chevron-left has-text-dark" />
+                      </a>
+                    )}
+                    {currentPage > 1 && (
+                      <a
+                      href="#top"
+                        css={css`
+                          font-size: 0.8em;
+                        `}
+                        onClick={() => setCurrentPage(1)}
+                        className="has-text-dark"
+                      >
+                        1
+                      </a>
+                    )}
+
+                    <span
+                      css={css`
+                        margin-left: 10px;
+                        margin-right: 10px;
+                        font-weight: bolder;
+                      `}
+                      className="has-text-link"
+                    >
+                      {currentPage}
+                    </span>
+                    {currentPage !== totalPages && (
+                      <a
+                      href="#top"
+                        css={css`
+                          font-size: 0.8em;
+                        `}
+                        className="has-text-dark"
+                        onClick={() => setCurrentPage(totalPages)}
+                      >
+                        {totalPages}
+                      </a>
+                    )}
+                    {currentPage !== totalPages && (
+                      <a
+                      href="#top"
+                        onClick={nextPage}
+                        css={css`
+                          margin-left: 5px;
+                        `}
+                      >
+                        <i className="fas fa-chevron-right has-text-dark" />
+                      </a>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
         </div>
       )}
     </div>
