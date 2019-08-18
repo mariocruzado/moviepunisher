@@ -60,11 +60,11 @@ const Register: React.FC<IPropsGlobal & RouteComponentProps> = props => {
     setSelectedProfileId(event.currentTarget.value);
   };
 
-    //To set enter key function without submit default
-    const onFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-      event.preventDefault();
-      registerUser();
-    };
+  //To set enter key function without submit default
+  const onFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    registerUser();
+  };
 
   const getProfiles = () => {
     fetch(`http://localhost:8080/api/users/all/profiles`, {
@@ -117,144 +117,146 @@ const Register: React.FC<IPropsGlobal & RouteComponentProps> = props => {
   };
   return (
     <div
-      className="box"
+      className="box has-background-light"
       css={css`
         min-width: 50%;
       `}
     >
-    <form onSubmit={onFormSubmit}>
-      <div className="field">
-        <h1 className="title has-text-black">New User</h1>
-        <hr />
-      </div>
-      <div className="columns">
-        <div className="column is-8">
-          <div className="field">
-            <label className="label">Username</label>
-            <div className="control has-icons-left has-icons-right">
-              <input
-                className={`input ${usernameChecker(username) &&
-                  "is-success"} ${label.length > 0 && "is-danger"}`}
-                type="text"
-                placeholder="Text input"
-                value={username}
-                onChange={updateUsername}
-              />
-              <span className="icon is-small is-left">
-                <i className="fas fa-user" />
-              </span>
-              {usernameChecker(username) && (
-                <span className="icon is-small is-right">
-                  <i className="fas fa-check" />
-                </span>
-              )}
-            </div>
+      <form onSubmit={onFormSubmit}>
+        <div className="columns">
+          <div className="column is-full">
+           <h3 css={css`justify-content:center;vertical-align:middle !important`}className="subtitle has-text-dark">Be part of the community!</h3>
           </div>
-          <div className="field">
-            <label className="label">Password</label>
-            <div className="control has-icons-left has-icons-right">
-              <input
-                className={`input ${
-                  !passwordChecker(userpass) ? "" : "is-success"
-                }`}
-                type="password"
-                placeholder="*****"
-                onChange={updateUserpass}
-                value={userpass}
-              />
-              <span className="icon is-small is-left">
-                <i className="fas fa-key" />
-              </span>
-            </div>
-          </div>
-          <div className="field">
-            <label className="label">Email</label>
-            <div className="control has-icons-left has-icons-right">
-              <input
-                className={`input ${
-                  !emailChecker(useremail) ? "is-danger" : "is-success"
-                }`}
-                type="text"
-                placeholder="Email input"
-                value={useremail}
-                onChange={updateUseremail}
-              />
-              <span className="icon is-small is-left">
-                <i className="fas fa-envelope" />
-              </span>
-              {!emailChecker(useremail) && (
-                <span className="icon is-small is-right">
-                  <i className="fas fa-exclamation-triangle" />
-                </span>
-              )}
-            </div>
-          </div>
-          {label && (
-            <small
-              data-testid="invalid_span"
-              className="has-text-danger"
-              css={css`
-                margin: 0px !important;
-                padding: 0px !important;
-              `}
-            >
-              {label}
-            </small>
-          )}
         </div>
-        <div className="column is-4">
-          <div className="field">
-            <label className="label">Profile</label>
-            <div className="control">
-              <div className="select">
-                <select
-                  value={selectedProfileId}
-                  onChange={updateSelectedProfile}
-                >
-                  {profiles.map((p: any) => (
-                    <option key={p.id} value={p.id}>
-                      {p.name}
-                    </option>
-                  ))}
-                </select>
+        <hr />
+        <div className="columns">
+          <div className="column is-8">
+            <div className="field">
+              <label className="label">Username</label>
+              <div className="control has-icons-left has-icons-right">
+                <input
+                  className={`input ${usernameChecker(username) &&
+                    "is-success"} ${label.length > 0 && "is-danger"}`}
+                  type="text"
+                  placeholder="Enter an username"
+                  value={username}
+                  onChange={updateUsername}
+                />
+                <span className="icon is-small is-left">
+                  <i className="fas fa-user" />
+                </span>
+                {usernameChecker(username) && (
+                  <span className="icon is-small is-right">
+                    <i className="fas fa-check" />
+                  </span>
+                )}
               </div>
             </div>
-          </div>
-          <div
-            className="field"
-            css={css`
-              text-align: center;
-            `}
-          >
-            {profiles.length > 0 && (
-              <img
+            <div className="field">
+              <label className="label">Password</label>
+              <div className="control has-icons-left has-icons-right">
+                <input
+                  className={`input ${
+                    !passwordChecker(userpass) ? "" : "is-success"
+                  }`}
+                  type="password"
+                  placeholder="*****"
+                  onChange={updateUserpass}
+                  value={userpass}
+                />
+                <span className="icon is-small is-left">
+                  <i className="fas fa-key" />
+                </span>
+              </div>
+            </div>
+            <div className="field">
+              <label className="label">Email</label>
+              <div className="control has-icons-left has-icons-right">
+                <input
+                  className={`input ${
+                    !emailChecker(useremail) ? "is-danger" : "is-success"
+                  }`}
+                  type="text"
+                  placeholder="Enter an email"
+                  value={useremail}
+                  onChange={updateUseremail}
+                />
+                <span className="icon is-small is-left">
+                  <i className="fas fa-envelope" />
+                </span>
+                {!emailChecker(useremail) && (
+                  <span className="icon is-small is-right">
+                    <i className="fas fa-exclamation-triangle" />
+                  </span>
+                )}
+              </div>
+            </div>
+            {label && (
+              <small
+                data-testid="invalid_span"
+                className="has-text-danger"
                 css={css`
-                  max-width: 140px;
+                  margin: 0px !important;
+                  padding: 0px !important;
                 `}
-                src={require("../img/" +
-                  profiles[selectedProfileId - 1].avatar)}
-              />
+              >
+                {label}
+              </small>
             )}
           </div>
+          <div className="column is-4">
+            <div className="field">
+              <label className="label">Profile</label>
+              <div className="control">
+                <div className="select">
+                  <select
+                    value={selectedProfileId}
+                    onChange={updateSelectedProfile}
+                  >
+                    {profiles.map((p: any) => (
+                      <option key={p.id} value={p.id}>
+                        {p.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div
+              className="field"
+              css={css`
+                text-align: center;
+              `}
+            >
+              {profiles.length > 0 && (
+                <img
+                  css={css`
+                    max-width: 140px;
+                  `}
+                  src={require("../img/" +
+                    profiles[selectedProfileId - 1].avatar)}
+                />
+              )}
+            </div>
+          </div>
         </div>
-      </div>
-      <hr />
-      <div className="field is-grouped">
-        <div className="control">
-          <button
-            className="button is-link"
-            disabled={!checkFields()}
-            type="submit"
-          >
-            Sign Up!
-          </button>
+        <hr />
+        <div className="field is-grouped">
+          <div className="control">
+            <button
+              className="button is-link"
+              disabled={!checkFields()}
+              type="submit"
+            >
+              Sign Up!
+            </button>
+          </div>
+          <div className="control">
+            <Link className="button is-danger" to={`/`}>
+              Cancel
+            </Link>
+          </div>
         </div>
-        <div className="control">
-          <Link className="button is-dark" to={`/`}>
-            Go Back
-          </Link>
-        </div>
-      </div>
       </form>
     </div>
   );

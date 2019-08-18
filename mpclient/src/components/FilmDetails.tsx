@@ -4,6 +4,7 @@ import { connect } from "react-redux";
 import { IFilm } from "../interfaces";
 import { IGlobalState } from "../reducers/global";
 import jwt from "jsonwebtoken";
+import unavailableimg from "../img/unavailable.gif"
 
 import * as actions from "../actions";
 
@@ -78,7 +79,7 @@ const FilmDetails: React.FC<IPropsGlobal & any> = props => {
                       ? `https://image.tmdb.org/t/p/w400/${
                           props.actualFilm.poster_path
                         }`
-                      : `http://roblucastaylor.com/wp-content/uploads/2017/07/cover-image-unavailable.jpg`
+                      : unavailableimg
                   }
                 />
                 <h1>

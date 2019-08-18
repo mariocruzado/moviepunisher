@@ -13,6 +13,10 @@ code {
     monospace;
 }
 
+.backgrounded {
+  background-image:url('../src/img/background.jpeg');
+  background-position:fixed;
+}
 @import url("https://fonts.googleapis.com/css?family=PT+Sans");
 
 .cellphone-container {

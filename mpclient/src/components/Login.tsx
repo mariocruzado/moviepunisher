@@ -104,7 +104,7 @@ const Login: React.FC<IPropsGlobal> = props => {
   return (
     <div className="column is-5-tablet is-4-desktop is-3-widescreen">
       <div
-        className="box"
+        className="box has-background-light has-text-dark"
         css={css`
           box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.5) !important;
         `}
@@ -112,15 +112,17 @@ const Login: React.FC<IPropsGlobal> = props => {
         <form onSubmit={onFormSubmit}>
           <div className="field is-vcentered">
             <div className="columns is-vcentered">
-              <h5 className="column has-text-info">Welcome</h5>
+              <figure className="image" css={css`padding:10px;margin-bottom:30px !important`}>
+              <img src={require('../img/logo.gif')} alt=""/>
+              </figure>
             </div>
           </div>
-          <div className="field">
+          <div className="field" css={css`margin-top:30px !important;`}>
             <div className="control has-icons-left">
               <input
                 type="text"
                 placeholder="username123"
-                className={`input ${usernameChecker(user) ? "is-success" : ""}`}
+                className={`input is-rounded ${usernameChecker(user) ? "is-success" : ""}`}
                 onChange={updateUser}
                 value={user}
                 required
@@ -136,7 +138,7 @@ const Login: React.FC<IPropsGlobal> = props => {
               <input
                 type="password"
                 placeholder="*******"
-                className={`input ${passwordChecker(pass) ? "is-success" : ""}`}
+                className={`input is-rounded ${passwordChecker(pass) ? "is-success" : ""}`}
                 onChange={updatePass}
                 value={pass}
                 data-testid="password_input"
@@ -154,10 +156,10 @@ const Login: React.FC<IPropsGlobal> = props => {
               </small>
             </div>
           )}
-          <div className="field columns">
+          <div className="field columns" css={css`margin-top:15px;`}>
             <div className="column is-4">
               <button
-                className="button is-link"
+                className="button is-link is-rounded"
                 disabled={enableButton()}
                 type="submit"
                 data-testid="auth_button"
@@ -166,7 +168,7 @@ const Login: React.FC<IPropsGlobal> = props => {
               </button>
             </div>
             <div className="column is-8 has-text-right">
-              <Link className="is-size-7" to={`/register`}>
+              <Link className="is-size-7 has-text-dark" to={`/register`}>
                 New User? Register now!
               </Link>
             </div>

@@ -135,7 +135,6 @@ const FilmReviews: React.FC<IPropsGlobal & { film_id: number }> = props => {
   };
 
   const removeFilm = (filmid: number) => {
-    console.log("Going to fetch");
     fetch(`http://localhost:8080/api/films/${filmid}`, {
       method: "DELETE",
       headers: {
@@ -145,12 +144,9 @@ const FilmReviews: React.FC<IPropsGlobal & { film_id: number }> = props => {
     }).then(response => {
       if (response.ok) {
         response.json().then((_film: any) => {
-          console.log("Successfully deleted");
           props.deleteFilm(filmid);
         }).catch((err) => { throw err });
         ;
-      } else {
-        console.log(response);
       }
     })
   };
@@ -385,7 +381,7 @@ const FilmReviews: React.FC<IPropsGlobal & { film_id: number }> = props => {
             <article className="media" key={r.id}>
               <div className="media-content">
                 <div className="content">
-                  <div className="box">
+                  <div className="box has-background-light">
                     <div className="columns">
                       <div className="column is-one-fifth">
                         <div
@@ -411,20 +407,20 @@ const FilmReviews: React.FC<IPropsGlobal & { film_id: number }> = props => {
                         <h6 className="is-block">
                           <i>"{r.title}</i>"
                         </h6>
-                        {r.user_isadmin != 0 && (
-                          <i
-                            className="fas fa-dragon has-text-link"
-                            css={css`
-                              margin-right: 5px;
-                            `}
-                          />
-                        )}
                         <small className="is-subtitle">
                           by:{" "}
                           <Link to={`/profile/${r.user_id}`}>
                             <b>{r.user_username}</b>
                           </Link>
                         </small>
+                        {r.user_isadmin != 0 && (
+                          <i
+                            className="fas fa-shield-alt has-text-link"
+                            css={css`
+                              margin-left: 5px;
+                            `}
+                          />
+                        )}
                         {r.modifiedby && (
                           <span
                             className="is-subtitle is-size-7"

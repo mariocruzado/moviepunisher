@@ -5,6 +5,7 @@ import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 import { paginate } from "../tools/pagination";
 import * as actions from "../actions";
+import unavailableimg from "../img/unavailable.gif";
 
 //Enabling Emotion
 /** @jsx jsx */
@@ -192,13 +193,13 @@ const FilmLocal: React.FC<IPropsGlobal> = props => {
           css={css`
             padding: 10px;
             width: 100% !important;
-            background-color: rgb(34, 34, 34) !important;
+            background-color: rgb(44, 44, 44) !important;
             margin-bottom: 5px;
             color: rgb(215, 215, 215) !important;
             font-size: 0.8em;
             top: 51px;
             position: fixed;
-            z-index: 50;
+            z-index: 2;
           `}
         >
           <div className="columns">
@@ -335,7 +336,7 @@ const FilmLocal: React.FC<IPropsGlobal> = props => {
           ).map(
             (f: any) =>
               0 === 0 && (
-                <Link to={`/${f.id}`} key={f.id}>
+                <Link to={`/film/${f.id}`} key={f.id}>
                   <div className="column is-three-quarters-mobile is-half-tablet is-half-desktop is-one-third-widescreen is-one-quarter-fullhd">
                     <div className="cellphone-container">
                       <div className="movie">
@@ -349,7 +350,7 @@ const FilmLocal: React.FC<IPropsGlobal> = props => {
                               ? `https://image.tmdb.org/t/p/w400/${
                                   f.poster_path
                                 }`
-                              : `http://roblucastaylor.com/wp-content/uploads/2017/07/cover-image-unavailable.jpg`
+                              : unavailableimg
                           }
                         />
 

@@ -5,6 +5,7 @@ import { connect } from "react-redux";
 import * as actions from "../actions";
 import { RouteComponentProps } from "react-router";
 import jwt from "jsonwebtoken";
+import $ from 'jquery';
 
 //Enabling Emotion
 /** @jsx jsx */
@@ -72,6 +73,15 @@ const Navbar: React.FC<IPropsGlobal & RouteComponentProps<any>> = props => {
     return null;
   };
 
+  React.useEffect(() => {
+    $(".navbar-burger").click(function() {
+      $("#navbarMenuToggler, .navbar-burger").toggleClass("is-active");
+    });
+    $("#navbarMenuToggler .navbar-item").click(function() {
+      $("#navbarMenuToggler, .navbar-burger").toggleClass("is-active");
+    });
+  },[]);
+
   return (
     <nav
       className="navbar is-light"
@@ -85,13 +95,12 @@ const Navbar: React.FC<IPropsGlobal & RouteComponentProps<any>> = props => {
       aria-label="main navigation"
     >
       <div className="navbar-brand">
-        <a className="navbar-item" href="/">
+        <figure className="navbar-item">
           <img
-            src="https://logodix.com/logo/280318.png"
+            src={require('../img/logo.gif')}
             width="112"
-            height="28"
           />
-        </a>
+        </figure>
         <div className="navbar-item">
           <form onSubmit={onFormSubmit}>
           <div className="field has-addons is-centered">
@@ -114,38 +123,55 @@ const Navbar: React.FC<IPropsGlobal & RouteComponentProps<any>> = props => {
           </div>
           </form>
         </div>
+        
         <a
           role="button"
           className="navbar-burger burger"
           aria-label="menu"
           aria-expanded="false"
           data-target="navbarBasicExample"
+          css={css`border-radius:10px`}
         >
           <span aria-hidden="true" />
           <span aria-hidden="true" />
           <span aria-hidden="true" />
         </a>
       </div>
-
-      <div id="navbarBasicExample" className="navbar-menu">
+      <div id="navbarMenuToggler" className="navbar-menu" css={css`z-index:1 !important`}>
+      <div className="navbar-start">
+          <Link className="navbar-item" to={'/'}>
+                Home
+          </Link>
+          <Link className="navbar-item" to={'/popular'}>
+                Popular Users
+          </Link>
+          <Link className="navbar-item" to={'/about'}>
+                About
+            </Link>
+        </div>
         <div className="navbar-end">
           <div className="navbar-item">
-            <span>
-              {} <b>{currentUser()!.username}</b>
+            <span css={css`margin-left:0px !important;font-size:0.85em;`}>
+              {'Logged as '} <Link className="has-text-weight-bold has-text-link" to={`/profile/${currentUser()!.id}`}>{currentUser()!.username}</Link>
             </span>
           </div>
           <div className="navbar-item">
             <div className="buttons">
-              <Link className="button is-primary" to={`/profile/${currentUser()!.id}`}>
+              {currentUser()!.isAdmin && (
+                   <Link className="button is-dark is-outlined" to={`/profile/${currentUser()!.id}`}>
+                   <i className="fas fa-user-shield" />
+                 </Link>           
+              )}
+              <Link className="button is-dark is-outlined" to={`/profile/${currentUser()!.id}`}>
                 <i className="fas fa-user-edit" />
               </Link>
-              <a className="button is-danger" onClick={logOut}>
+              <a className="button is-danger is-rounded is-outlined" onClick={logOut}>
                 <i className="fas fa-power-off" />
               </a>
             </div>
           </div>
         </div>
-      </div>
+        </div>
     </nav>
   );
 };

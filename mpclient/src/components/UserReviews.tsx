@@ -68,6 +68,19 @@ const UserReviews: React.FC<IPropsGlobal & any> = props => {
       </div>
       {display === "reviews" && (
         <div id="top">
+          {reviews.length === 0 && (
+                        <div
+                        className="card has-background-dark"
+                        css={css`
+                          padding: 10px;
+                          width: 100% !important;
+                          background-color: rgb(34, 34, 34) !important;
+                          margin-bottom: 5px;
+                          color: rgb(215, 215, 215) !important;
+                          font-size: 0.8em;
+                        `}
+                      >
+            This user haven't reviewed any film yet!</div>)}
           {reviews.length > 0 && (
             // Pagination
             <div
@@ -143,7 +156,7 @@ const UserReviews: React.FC<IPropsGlobal & any> = props => {
                         justify-content: center;
                       `}
                     >
-                      <Link to={`/${r.film_id}`}>
+                      <Link to={`/film/${r.film_id}`}>
                         <figure className="image">
                           <img
                             css={css`

@@ -3,6 +3,7 @@ import { IGlobalState } from "../reducers/global";
 import * as actions from "../actions";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
+import unavailableimg from "../img/unavailable.gif";
 
 //Enabling Emotion
 /** @jsx jsx */
@@ -101,7 +102,6 @@ const FilmSearch: React.FC<IPropsGlobal> = props => {
 
   //AVG Ratings by reviews
   const getAvgReviews = (idsarray: any[]) => {
-    console.log("calculando");
     fetch("http://localhost:8080/api/reviews/film/avg/", {
       method: "POST",
       headers: {
@@ -121,8 +121,6 @@ const FilmSearch: React.FC<IPropsGlobal> = props => {
           });
           saveFilms([...filmsComplete]);
         });
-      } else {
-        console.log("not ok");
       }
     });
     return null;
@@ -180,7 +178,7 @@ const FilmSearch: React.FC<IPropsGlobal> = props => {
         {films.length > 0 && (
           <div className="columns is-multiline is-mobile is-centered">
             {films.map((f: IFilm) => (
-              <Link to={`/${f.id}`} key={f.id}>
+              <Link to={`/film/${f.id}`} key={f.id}>
                 <div className="column is-three-quarters-mobile is-half-tablet is-half-desktop is-one-third-widescreen is-one-quarter-fullhd">
                   <div className="cellphone-container">
                     <div className="movie">
@@ -192,7 +190,7 @@ const FilmSearch: React.FC<IPropsGlobal> = props => {
                         src={
                           f.poster_path
                             ? `https://image.tmdb.org/t/p/w400/${f.poster_path}`
-                            : `http://roblucastaylor.com/wp-content/uploads/2017/07/cover-image-unavailable.jpg`
+                            : unavailableimg
                         }
                       />
 
