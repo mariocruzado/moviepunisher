@@ -15,6 +15,7 @@ const adminRouter = require('./routes/admin');
 const reviewsRouter = require('./routes/review');
 const commentsRouter = require('./routes/comment');
 const filmsRouter = require('./routes/films');
+const rewardsRouter = require('./routes/reward');
 
 app.use(cors());
 
@@ -31,6 +32,6 @@ app.use('/api/admin', adminRouter);
 app.use('/api/reviews', reviewsRouter);
 app.use('/api/comments', commentsRouter);
 app.use('/api/films', filmsRouter);
-
+app.use('/api/rewards', rewardsRouter);
 
 module.exports = app;

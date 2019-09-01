@@ -22,9 +22,10 @@ const SQL_detailUserById = () =>
 
 //All users detailed
 const SQL_detailAllUsers = () =>
-  `SELECT user.id, user.email, user.username, user.isadmin, user.regdate, user.description, user.points, profile.name AS profile_name, profile.avatar AS profile_avatar
+  `SELECT user.id, user.username, user.isadmin, user.regdate, user.description, user.points, profile.name AS profile_name, profile.avatar AS profile_avatar, (SELECT COUNT(*) FROM review rev WHERE rev.user_id = user.id) AS reviews
   FROM user
-  INNER JOIN profile ON profile.id = user.profile_id ORDER BY user.id ASC`;
+  INNER JOIN profile ON profile.id = user.profile_id 
+  ORDER BY reviews DESC`;
 
 //Edit user info
 const SQL_updateUser = () => `UPDATE user SET ? WHERE id = ?`;

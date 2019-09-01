@@ -38,7 +38,7 @@ const EditReview: React.FC<IPropsGlobal & any> = props => {
   ) => {
     if (
       !(event.currentTarget.value.charAt(0) === " ") &&
-      event.currentTarget.value.length < 501
+      event.currentTarget.value.length < 1501
     ) {
       setReviewContent(event.currentTarget.value);
       setLabel(false);
@@ -129,8 +129,8 @@ const EditReview: React.FC<IPropsGlobal & any> = props => {
             <div className="control">
               <div className="select is-rounded">
                 <select value={rating} onChange={updateRating}>
-                  <option value="1">Bad</option>
-                  <option value="2">Not bad</option>
+                  <option value="1">Terrible</option>
+                  <option value="2">Bad</option>
                   <option value="3">Regular</option>
                   <option value="4">Good</option>
                   <option value="5">Excellent</option>

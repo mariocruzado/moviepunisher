@@ -8,7 +8,7 @@ const controller = {};
 const model = require("../models/filmModel");
 
 //Retrieve local films
-controller.getFilms = (req, res, _next) => {
+controller.getFilms = (_req, res, _next) => {
   try {
     model
       .getFilms()

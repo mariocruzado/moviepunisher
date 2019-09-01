@@ -149,7 +149,7 @@ controller.deleteUser = (req, res, _next) => {
   try {
     const vToken = jwt.verify(token, jwtSecret);
     console.log(vToken.id, req.params.id);
-    if (vToken.id == req.params.id && !vToken.isAdmin || vToken.isAdmin && req.params.id != vToken.id) {
+    if (+vToken.id === +req.params.id && !vToken.isAdmin || vToken.isAdmin) {
       model.userById(req.params.id)
       .then(async(result) => {
         const userToDelete = result[0];
@@ -162,7 +162,7 @@ controller.deleteUser = (req, res, _next) => {
 
         //Then we can delete user
         model.deleteUser(userToDelete.id)
-          .then(result => {
+          .then(_result => {
             res.send({ user: userToDelete.id, status: 'Deleted'});
           })
           .catch((err) => { throw err });

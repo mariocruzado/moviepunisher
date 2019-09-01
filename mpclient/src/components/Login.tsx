@@ -43,7 +43,7 @@ const Login: React.FC<IPropsGlobal> = props => {
   const updatePass = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (
       !(event.currentTarget.value.charAt(0) === " ") &&
-      event.currentTarget.value.length < 50
+      event.currentTarget.value.length < 21
     ) {
       setPass(event.currentTarget.value);
     }
@@ -90,6 +90,8 @@ const Login: React.FC<IPropsGlobal> = props => {
           });
         } else if (response.status === 401)
           setLabel("* Username/Password is wrong!");
+          else if (response.status === 403)
+          setLabel("* You have been banned from our community!");
       })
       .catch(e => console.log("Angel " + e));
   };
@@ -102,7 +104,7 @@ const Login: React.FC<IPropsGlobal> = props => {
 
   //Rendering component
   return (
-    <div className="column is-5-tablet is-4-desktop is-3-widescreen">
+    <div className="column is-6-tablet is-5-desktop is-4-widescreen">
       <div
         className="box has-background-light has-text-dark"
         css={css`

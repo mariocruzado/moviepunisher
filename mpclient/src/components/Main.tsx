@@ -10,6 +10,9 @@ import UserPanel from "./UserPanel";
 import { css, jsx } from '@emotion/core';
 import FilmSearch from "./FilmSearch";
 import FilmLocal from "./FilmLocal";
+import PopularUsers from "./PopularUsers";
+import UserEdit from "./UserEdit";
+import Admin from "./Admin";
 
 const Main: React.FC<any> = props => {
   return (
@@ -24,6 +27,9 @@ const Main: React.FC<any> = props => {
         <Switch>
           <Route path="/" exact component={FilmLocal} />
           <Route path="/search" exact component={FilmSearch} />
+          <Route path="/popular" exact component={PopularUsers} />
+          <Route path="/update" exact component={UserEdit} />
+          <Route path="/admin" exact component={Admin} />
           <Route path="/film/:film_id" exact component={SingleFilm} />
           <Route path="/profile/:user_id" exact component={UserPanel} />
           <Redirect to="/" />

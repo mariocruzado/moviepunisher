@@ -7,10 +7,15 @@ export const usernameChecker = (name: string) => {
 
 export const passwordChecker = (pass: string) => {
   let res = false;
-  if (pass.length > 5 && pass.length < 20 && !pass.includes(" ")) res = true;
-
+  if (pass.length > 5 && pass.length < 21 && !pass.includes(" ")) res = true;
   return res;
 };
+
+export const descriptionChecker = (desc: string) => {
+  let res = false;
+  if (desc.length < 251 && desc.charAt(0) !== ' ') res = true;
+  return res;
+}
 
 export const emailChecker = (email: string) => {
   let res = false;

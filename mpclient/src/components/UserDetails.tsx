@@ -7,7 +7,7 @@ import { IUser } from "../interfaces";
 import { connect } from "react-redux";
 import jwt from "jsonwebtoken";
 import { dateFormat } from "../tools/dateFormats";
-import { RouteComponentProps } from "react-router-dom";
+import { RouteComponentProps, Link } from 'react-router-dom';
 
 interface IPropsGlobal {
   token: string;
@@ -24,7 +24,7 @@ const UserDetails: React.FC<IPropsGlobal & { user_id: number }> = props => {
     return null;
   }, [props.token]);
 
-  React.useEffect(() => getUserInfo(props.user_id), []);
+  React.useEffect(() => getUserInfo(props.user_id), [props.user_id]);
 
   const getUserInfo = (id: number) => {
     fetch("http://localhost:8080/api/users/" + id, {
@@ -91,6 +91,14 @@ const UserDetails: React.FC<IPropsGlobal & { user_id: number }> = props => {
             </div>
             <div className="column is-7">
               <span className="is-italic"> {user.username}</span>
+              {user.isadmin != 0 && (
+                          <i
+                            className="fas fa-shield-alt has-text-link"
+                            css={css`
+                              margin-left: 5px;
+                            `}
+                          />
+                        )}
             </div>
           </div>
           <div className="columns">
@@ -122,6 +130,7 @@ const UserDetails: React.FC<IPropsGlobal & { user_id: number }> = props => {
             </div>
           </div>
         </div>
+        
         <div className="column is-5">
           <div className="columns">
           <div className="column is-one-fifth has-text-right">
@@ -130,6 +139,7 @@ const UserDetails: React.FC<IPropsGlobal & { user_id: number }> = props => {
             <p className="is-italic has-text-grey-light">{user.description?user.description:'No user description...'}</p>
           </div>
           </div>
+          
         </div>
       </div>
     </div>

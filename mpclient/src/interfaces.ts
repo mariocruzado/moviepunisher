@@ -20,12 +20,15 @@ export interface IUser {
     username: string;
     email: string;
     password: string;
-    isadmin: boolean;
-    isbanned: boolean;
+    isadmin: boolean | number;
+    isbanned: boolean | number;
     regdate: string;
     profile_id:number;
     description:string;
     points:number;
+    reviews:number;
+    profile_avatar:string;
+    profile_name:string;
 }
 
 export interface IPages {

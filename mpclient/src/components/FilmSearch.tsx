@@ -42,7 +42,8 @@ const FilmSearch: React.FC<IPropsGlobal> = props => {
   const [currentQuery, setCurrentQuery] = React.useState<any>("");
 
   const [noResults, setNoResults] = React.useState(false);
-  const defaultQuery = `discover/movie?primary_release_date.gte=2019-06-04&primary_release_date.lte=${formatDate()}`;
+  // const defaultQuery = `discover/movie?primary_release_date.gte=2019-06-04&primary_release_date.lte=${formatDate()}`;
+  const defaultQuery = 'discover/movie?sort_by=popularity.desc';
 
   //Get films by query
   const retrieveFilms = () => {
@@ -155,7 +156,7 @@ const FilmSearch: React.FC<IPropsGlobal> = props => {
           className="card has-text-centered"
           css={css`
             background-color: rgb(60, 60, 60) !important;
-            color: rgb(255, 222, 255) !important;
+            color: rgb(225, 222, 235) !important;
             border-radius: 0px !important;
             padding:10px;
           `}
@@ -165,6 +166,7 @@ const FilmSearch: React.FC<IPropsGlobal> = props => {
           )}
           {!noResults && <h5>{header}</h5>}
           {noResults && (
+            <div>
               <div css={css`display:flex !important;justify-content:center !important;`}>
                 <figure className="image is-128x128">
                   <img
@@ -172,6 +174,10 @@ const FilmSearch: React.FC<IPropsGlobal> = props => {
                     alt="Sorry!"
                   />
                 </figure>
+              </div>
+              <div className="container" css={css`margin-top:20px !important;`}>
+                <p className="is-size-7">Sorry! No results found for <span className="has-text-grey">{props.query.split('query=')[1]}</span></p>
+              </div>
               </div>
           )}
         </div>

@@ -6,6 +6,9 @@ import { connect } from "react-redux";
 /** @jsx jsx */
 import { css, jsx } from "@emotion/core";
 
+//jQuery
+import $ from "jquery";
+
 import "../tools/fieldChecker";
 import {
   usernameChecker,
@@ -45,15 +48,20 @@ const Register: React.FC<IPropsGlobal & RouteComponentProps> = props => {
       alphanumericChecker(event.currentTarget.value)
     )
       setUsername(event.currentTarget.value);
+      setLabel('');
   };
 
   const updateUserpass = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (!event.currentTarget.value.includes(" "))
+    if (
+      !event.currentTarget.value.includes(" ") &&
+      event.currentTarget.value.length < 21
+    )
       setUserpass(event.currentTarget.value);
   };
   const updateUseremail = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (!event.currentTarget.value.includes(" ")) {
       setUseremail(event.currentTarget.value);
+      setLabel('');
     }
   };
   const updateSelectedProfile = (event: React.ChangeEvent<any>) => {
@@ -72,18 +80,22 @@ const Register: React.FC<IPropsGlobal & RouteComponentProps> = props => {
       headers: {
         "Content-Type": "application/json"
       }
-    })
-      .then(response => {
-        if (response.ok) {
-          response.json().then((profiles: any) => {
-            saveProfiles(profiles);
-          });
-        }
-      })
-      .catch(e => console.log("Angel " + e));
+    }).then(response => {
+      if (response.ok) {
+        response.json().then((profiles: any) => {
+          saveProfiles(profiles);
+        });
+      }
+    });
   };
 
   React.useEffect(getProfiles, []);
+  React.useEffect(() => {
+    $(".modal-close, .butclose").click(function() {
+      $(".modal").removeClass("is-active");
+      props.history.push("/");
+    });
+  }, []);
 
   const registerUser = () => {
     if (checkFields()) {
@@ -99,165 +111,192 @@ const Register: React.FC<IPropsGlobal & RouteComponentProps> = props => {
           "Content-Type": "application/json"
         },
         body: JSON.stringify(newUser)
-      })
-        .then(response => {
-          if (response.ok) {
-            response.json().then((user: IUser) => {
-              props.history.push(`/`);
-              alert("User created successfully! Log in with your credentials");
-            });
-          } else if (response.status === 409) {
-            setLabel("User already exists!");
-          }
-        })
-        .catch(e => console.log("Angel " + e));
+      }).then(response => {
+        if (response.ok) {
+          response.json().then((user: IUser) => {
+            $(".modal").addClass("is-active");
+          });
+        } else if (response.status === 409) {
+          setLabel("User/Email already exists!");
+        }
+      });
     } else {
-      alert("Fill the fields correctly, please!");
+      setLabel("Fill the fields correctly, please!");
     }
   };
+
   return (
-    <div
-      className="box has-background-light"
-      css={css`
-        min-width: 50%;
-      `}
-    >
-      <form onSubmit={onFormSubmit}>
-        <div className="columns">
-          <div className="column is-full">
-           <h3 css={css`justify-content:center;vertical-align:middle !important`}className="subtitle has-text-dark">Be part of the community!</h3>
-          </div>
-        </div>
-        <hr />
-        <div className="columns">
-          <div className="column is-8">
-            <div className="field">
-              <label className="label">Username</label>
-              <div className="control has-icons-left has-icons-right">
-                <input
-                  className={`input ${usernameChecker(username) &&
-                    "is-success"} ${label.length > 0 && "is-danger"}`}
-                  type="text"
-                  placeholder="Enter an username"
-                  value={username}
-                  onChange={updateUsername}
-                />
-                <span className="icon is-small is-left">
-                  <i className="fas fa-user" />
-                </span>
-                {usernameChecker(username) && (
-                  <span className="icon is-small is-right">
-                    <i className="fas fa-check" />
-                  </span>
-                )}
-              </div>
-            </div>
-            <div className="field">
-              <label className="label">Password</label>
-              <div className="control has-icons-left has-icons-right">
-                <input
-                  className={`input ${
-                    !passwordChecker(userpass) ? "" : "is-success"
-                  }`}
-                  type="password"
-                  placeholder="*****"
-                  onChange={updateUserpass}
-                  value={userpass}
-                />
-                <span className="icon is-small is-left">
-                  <i className="fas fa-key" />
-                </span>
-              </div>
-            </div>
-            <div className="field">
-              <label className="label">Email</label>
-              <div className="control has-icons-left has-icons-right">
-                <input
-                  className={`input ${
-                    !emailChecker(useremail) ? "is-danger" : "is-success"
-                  }`}
-                  type="text"
-                  placeholder="Enter an email"
-                  value={useremail}
-                  onChange={updateUseremail}
-                />
-                <span className="icon is-small is-left">
-                  <i className="fas fa-envelope" />
-                </span>
-                {!emailChecker(useremail) && (
-                  <span className="icon is-small is-right">
-                    <i className="fas fa-exclamation-triangle" />
-                  </span>
-                )}
-              </div>
-            </div>
-            {label && (
-              <small
-                data-testid="invalid_span"
-                className="has-text-danger"
+    <div>
+      <div
+        className="box has-background-light"
+        css={css`
+          min-width: 50%;
+        `}
+      >
+        <form onSubmit={onFormSubmit}>
+          <div className="columns">
+            <div className="column is-full">
+              <h3
                 css={css`
-                  margin: 0px !important;
-                  padding: 0px !important;
+                  justify-content: center;
+                  vertical-align: middle !important;
                 `}
+                className="subtitle has-text-dark"
               >
-                {label}
-              </small>
-            )}
+                Be part of the community!
+              </h3>
+            </div>
           </div>
-          <div className="column is-4">
-            <div className="field">
-              <label className="label">Profile</label>
-              <div className="control">
-                <div className="select">
-                  <select
-                    value={selectedProfileId}
-                    onChange={updateSelectedProfile}
-                  >
-                    {profiles.map((p: any) => (
-                      <option key={p.id} value={p.id}>
-                        {p.name}
-                      </option>
-                    ))}
-                  </select>
+          <hr />
+          <div className="columns">
+            <div className="column is-8">
+              <div className="field">
+                <label className="label">Username</label>
+                <div className="control has-icons-left has-icons-right">
+                  <input
+                    className={`input ${usernameChecker(username) &&
+                      "is-success"} ${label.length > 0 && "is-danger"}`}
+                    type="text"
+                    placeholder="Enter an username"
+                    value={username}
+                    onChange={updateUsername}
+                  />
+                  <span className="icon is-small is-left">
+                    <i className="fas fa-user" />
+                  </span>
+                  {usernameChecker(username) && (
+                    <span className="icon is-small is-right">
+                      <i className="fas fa-check" />
+                    </span>
+                  )}
                 </div>
               </div>
-            </div>
-            <div
-              className="field"
-              css={css`
-                text-align: center;
-              `}
-            >
-              {profiles.length > 0 && (
-                <img
+              <div className="field">
+                <label className="label">Password</label>
+                <div className="control has-icons-left has-icons-right">
+                  <input
+                    className={`input ${
+                      !passwordChecker(userpass) ? "" : "is-success"
+                    }`}
+                    type="password"
+                    placeholder="*****"
+                    onChange={updateUserpass}
+                    value={userpass}
+                  />
+                  <span className="icon is-small is-left">
+                    <i className="fas fa-key" />
+                  </span>
+                </div>
+              </div>
+              <div className="field">
+                <label className="label">Email</label>
+                <div className="control has-icons-left has-icons-right">
+                  <input
+                    className={`input ${
+                      !emailChecker(useremail) ? "is-danger" : "is-success"
+                    }`}
+                    type="text"
+                    placeholder="Enter an email"
+                    value={useremail}
+                    onChange={updateUseremail}
+                  />
+                  <span className="icon is-small is-left">
+                    <i className="fas fa-envelope" />
+                  </span>
+                  {!emailChecker(useremail) && (
+                    <span className="icon is-small is-right">
+                      <i className="fas fa-exclamation-triangle" />
+                    </span>
+                  )}
+                </div>
+              </div>
+              {label && (
+                <small
+                  data-testid="invalid_span"
+                  className="has-text-danger"
                   css={css`
-                    max-width: 140px;
+                    margin: 0px !important;
+                    padding: 0px !important;
                   `}
-                  src={require("../img/" +
-                    profiles[selectedProfileId - 1].avatar)}
-                />
+                >
+                  {label}
+                </small>
               )}
             </div>
+            <div className="column is-4">
+              <div className="field">
+                <label className="label">Profile</label>
+                <div className="control">
+                  <div className="select">
+                    <select
+                      value={selectedProfileId}
+                      onChange={updateSelectedProfile}
+                    >
+                      {profiles.map((p: any) => (
+                        <option key={p.id} value={p.id}>
+                          {p.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div
+                className="field"
+                css={css`
+                  text-align: center;
+                `}
+              >
+                {profiles.length > 0 && (
+                  <img
+                    css={css`
+                      max-width: 140px;
+                    `}
+                    src={require("../img/" +
+                      profiles[selectedProfileId - 1].avatar)}
+                  />
+                )}
+              </div>
+            </div>
           </div>
-        </div>
-        <hr />
-        <div className="field is-grouped">
-          <div className="control">
-            <button
-              className="button is-link"
-              disabled={!checkFields()}
-              type="submit"
-            >
-              Sign Up!
+          <hr />
+          <div className="field is-grouped" css={css`margin-top:0px !important`}>
+            <div className="control">
+              <button
+                className="button is-link"
+                disabled={!checkFields()}
+                type="submit"
+              >
+                Sign Up!
+              </button>
+            </div>
+            <div className="control">
+              <Link className="button is-danger" to={`/`}>
+                Cancel
+              </Link>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <div className="modal">
+        <div className="modal-background"></div>
+        <div className="modal-card">
+          <header className="modal-card-head">
+            <p className="modal-card-title">User created!</p>
+            <button className="delete modal-close" aria-label="close"></button>
+          </header>
+          <section className="modal-card-body">
+            User created successfully! Now you will be redirected to the login
+            page. Use your user's credentials to access!
+          </section>
+          <footer className="modal-card-foot">
+            <button className="button is-success butclose" aria-label="close">
+              Accept
             </button>
-          </div>
-          <div className="control">
-            <Link className="button is-danger" to={`/`}>
-              Cancel
-            </Link>
-          </div>
+          </footer>
         </div>
-      </form>
+      </div>
     </div>
   );
 };

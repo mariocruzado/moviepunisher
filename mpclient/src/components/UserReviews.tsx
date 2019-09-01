@@ -14,10 +14,13 @@ interface IPropsGlobal {
   token: string;
 }
 const UserReviews: React.FC<IPropsGlobal & any> = props => {
-  const [reviews, saveReviews] = React.useState<any>([]);
+  const [reviews, saveReviews] = React.useState<any | null>([]);
+  const [rewards, saveRewards] = React.useState<any | null>([]);
+
   const [display, setDisplay] = React.useState("reviews");
   const [currentPage, setCurrentPage] = React.useState(1);
   const [totalPages, setTotalPages] = React.useState(1);
+  const [ready, setReady] = React.useState<boolean>(false);
 
   const decodedToken = React.useMemo(() => {
     const dToken = jwt.decode(props.token);
@@ -40,47 +43,79 @@ const UserReviews: React.FC<IPropsGlobal & any> = props => {
           saveReviews(reviews);
           const totp = Math.ceil(reviews.length / 5);
           setTotalPages(totp);
+          setReady(true);
         });
       }
     });
   };
 
+  const retrieveUserRewards = (userid: number) => {
+    fetch(`http://localhost:8080/api/rewards/${userid}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + props.token
+      }
+    }).then(response => {
+      if (response.ok) {
+        response.json().then((rewards: any) => {
+          saveRewards(rewards);
+        });
+      }
+    });
+  };
   const nextPage = () => {
     if (currentPage < totalPages) setCurrentPage(p => p + 1);
   };
   const prevPage = () => {
     if (currentPage > 1) setCurrentPage(p => p - 1);
   };
-  React.useEffect(() => retrieveReviews(props.user_id), []);
+  React.useEffect(() => {
+    retrieveReviews(props.user_id);
+    retrieveUserRewards(props.user_id);
+  }, [props.user_id]);
+
+  if (!ready) return null;
   return (
     <div>
       <div className="tabs">
         <ul>
           <li className={`${display === "reviews" ? "is-active" : ""}`}>
             <a onClick={() => setDisplay("reviews")}>
-              Reviews ({reviews.length})
+              <span><i className="fas fa-edit"></i></span>
+              {' '}{`Reviews (${reviews.length})`}
             </a>
           </li>
-          <li className={`${display === "awards" ? "is-active" : ""}`}>
-            <a onClick={() => setDisplay("awards")}>Awards</a>
+          <li className={`${display === "rewards" ? "is-active" : ""}`}>
+            <a onClick={() => setDisplay("rewards")}>
+            <span><i className="fas fa-star"></i></span>
+              Rewards ({rewards.length})
+              </a>
           </li>
         </ul>
+        { decodedToken!.id === +props.user_id && (
+            <div css={css`margin:10px !important;`}>
+              <Link className="button is-light is-small" to={'/update'}><i className="fas fa-edit"></i>{' Edit my profile'}</Link>
+            </div>
+          )}
       </div>
       {display === "reviews" && (
         <div id="top">
           {reviews.length === 0 && (
-                        <div
-                        className="card has-background-dark"
-                        css={css`
-                          padding: 10px;
-                          width: 100% !important;
-                          background-color: rgb(34, 34, 34) !important;
-                          margin-bottom: 5px;
-                          color: rgb(215, 215, 215) !important;
-                          font-size: 0.8em;
-                        `}
-                      >
-            This user haven't reviewed any film yet!</div>)}
+            <div
+              className="card has-background-dark"
+              css={css`
+                padding: 10px;
+                width: 100% !important;
+                background-color: rgb(34, 34, 34) !important;
+                margin-bottom: 5px;
+                color: rgb(215, 215, 215) !important;
+                font-size: 0.8em;
+              `}
+            >
+              This user haven't reviewed any film yet!
+            </div>
+          )}
           {reviews.length > 0 && (
             // Pagination
             <div
@@ -164,9 +199,7 @@ const UserReviews: React.FC<IPropsGlobal & any> = props => {
                             `}
                             src={
                               r.film_cover
-                                ? `https://image.tmdb.org/t/p/w400/${
-                                    r.film_cover
-                                  }`
+                                ? `https://image.tmdb.org/t/p/w400/${r.film_cover}`
                                 : `http://roblucastaylor.com/wp-content/uploads/2017/07/cover-image-unavailable.jpg`
                             }
                           />
@@ -231,7 +264,7 @@ const UserReviews: React.FC<IPropsGlobal & any> = props => {
                     <div className="has-text-right">
                       {currentPage > 1 && (
                         <a
-                        href="#top"
+                          href="#top"
                           onClick={prevPage}
                           css={css`
                             margin-right: 5px;
@@ -242,7 +275,7 @@ const UserReviews: React.FC<IPropsGlobal & any> = props => {
                       )}
                       {currentPage > 1 && (
                         <a
-                        href="#top"
+                          href="#top"
                           css={css`
                             font-size: 0.8em;
                           `}
@@ -265,7 +298,7 @@ const UserReviews: React.FC<IPropsGlobal & any> = props => {
                       </span>
                       {currentPage !== totalPages && (
                         <a
-                        href="#top"
+                          href="#top"
                           css={css`
                             font-size: 0.8em;
                           `}
@@ -277,7 +310,7 @@ const UserReviews: React.FC<IPropsGlobal & any> = props => {
                       )}
                       {currentPage !== totalPages && (
                         <a
-                        href="#top"
+                          href="#top"
                           onClick={nextPage}
                           css={css`
                             margin-left: 5px;
@@ -291,6 +324,57 @@ const UserReviews: React.FC<IPropsGlobal & any> = props => {
                 </div>
               </div>
             </div>
+          )}
+        </div>
+      )}
+      {display === "rewards" && (
+        <div>
+                    {rewards.length === 0 && (
+            <div
+              className="card has-background-dark"
+              css={css`
+                padding: 10px;
+                width: 100% !important;
+                background-color: rgb(34, 34, 34) !important;
+                margin-bottom: 5px;
+                color: rgb(215, 215, 215) !important;
+                font-size: 0.8em;
+              `}
+            >
+              This user haven't earned any reward yet!
+            </div>
+          )}
+          {rewards.length > 0 && (
+          <div
+            className="card has-background-dark"
+            css={css`
+              padding: 10px;
+              width: 100% !important;
+              background-color: rgb(34, 34, 34) !important;
+              margin-bottom: 5px;
+              color: rgb(215, 215, 215) !important;
+              font-size: 0.8em;
+            `}
+          >
+            {rewards.map((r: any) => (
+              <div
+                className="box has-background-dark has-text-light"
+                key={r.id}
+              >
+                <div className="columns">
+                  <div className="column is-one-fifth">
+                    <figure className="image is-64x64">
+                      <i className="fas fa-gifts is-large"></i>
+                    </figure>
+                  </div>
+                  <div className="column">
+                    <h1 css={css`font-size:1.5em;`}>{r.prize}</h1>
+                    <span>Earned on: {dateFormat(r.date, false)}</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
           )}
         </div>
       )}

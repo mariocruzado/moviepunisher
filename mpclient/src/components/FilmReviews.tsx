@@ -5,6 +5,8 @@ import { IGlobalState } from "../reducers/global";
 //Enabling Emotion
 /** @jsx jsx */
 import { css, jsx } from "@emotion/core";
+
+
 import { dateFormat } from "../tools/dateFormats";
 import jwt from "jsonwebtoken";
 import Comments from "./Comments";
@@ -302,8 +304,8 @@ const FilmReviews: React.FC<IPropsGlobal & { film_id: number }> = props => {
                       <div className="control">
                         <div className="select is-rounded">
                           <select value={rating} onChange={updateRating}>
-                            <option value="1">Bad</option>
-                            <option value="2">Not bad</option>
+                            <option value="1">Terrible</option>
+                            <option value="2">Bad</option>
                             <option value="3">Regular</option>
                             <option value="4">Good</option>
                             <option value="5">Excellent</option>

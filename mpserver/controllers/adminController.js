@@ -125,15 +125,15 @@ controller.editUser = (req, res, _next) => {
               ch.checkProfileId(req.body.profile_id) && {
                 profile_id: req.body.profile_id
               }),
-            ...(req.body.isadmin && { isadmin: req.body.isadmin }),
             ...(req.body.points && { points: req.body.points }),
-            ...(req.body.isbanned && { isbanned: req.body.isbanned }),
+            ...(req.body.isbanned && { isbanned: +req.body.isbanned }),
+            ...(req.body.isadmin && { isadmin: +req.body.isadmin }),
             id: userId
           };
 
           model
             .editUser(req.params.id, objU)
-            .then(result => {
+            .then(_result => {
               model
                 .userById(req.params.id)
                 .then(result => res.send(result[0]))

@@ -31,7 +31,7 @@ const Navbar: React.FC<IPropsGlobal & RouteComponentProps<any>> = props => {
   const updateSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (
       !(event.currentTarget.value.charAt(0) === " ") &&
-      event.currentTarget.value.length < 101 &&
+      event.currentTarget.value.length < 71 &&
       alphanumericChecker(event.currentTarget.value)
     ) {
       setSearch(event.currentTarget.value);
@@ -158,11 +158,11 @@ const Navbar: React.FC<IPropsGlobal & RouteComponentProps<any>> = props => {
           <div className="navbar-item">
             <div className="buttons">
               {currentUser()!.isAdmin && (
-                   <Link className="button is-dark is-outlined" to={`/profile/${currentUser()!.id}`}>
+                   <Link className="button is-link is-outlined" to={`/admin`}>
                    <i className="fas fa-user-shield" />
                  </Link>           
               )}
-              <Link className="button is-dark is-outlined" to={`/profile/${currentUser()!.id}`}>
+              <Link className="button is-dark is-outlined" to={`/update`}>
                 <i className="fas fa-user-edit" />
               </Link>
               <a className="button is-danger is-rounded is-outlined" onClick={logOut}>
