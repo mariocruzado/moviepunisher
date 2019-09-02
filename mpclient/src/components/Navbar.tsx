@@ -145,8 +145,8 @@ const Navbar: React.FC<IPropsGlobal & RouteComponentProps<any>> = props => {
           <Link className="navbar-item" to={'/popular'}>
                 Popular Users
           </Link>
-          <Link className="navbar-item" to={'/about'}>
-                About
+          <Link className="navbar-item" to={'/search'}>
+                Trending Online
             </Link>
         </div>
         <div className="navbar-end">

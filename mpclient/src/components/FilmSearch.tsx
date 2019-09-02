@@ -136,6 +136,11 @@ const FilmSearch: React.FC<IPropsGlobal> = props => {
     }
   }, [calculateAvg]);
 
+  //Default search 
+  const resetSearch = () => {
+    props.saveQuery(defaultQuery);
+  };
+
   return (
     <div id="top">
       {/* Films listed */}
@@ -176,7 +181,8 @@ const FilmSearch: React.FC<IPropsGlobal> = props => {
                 </figure>
               </div>
               <div className="container" css={css`margin-top:20px !important;`}>
-                <p className="is-size-7">Sorry! No results found for <span className="has-text-grey">{props.query.split('query=')[1]}</span></p>
+                <p className="is-size-7">Sorry! No results found for <span className="has-text-grey">{!props.query.split('query=')[1]?'...':props.query.split('query=')[1]}.</span></p>
+                <p className="is-size-7"><a onClick={resetSearch}>Click here</a> to see popular movies right now!</p>
               </div>
               </div>
           )}

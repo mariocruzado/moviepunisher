@@ -28,9 +28,6 @@ const SQL_detailAllUsers = () =>
 //Edit user info
 const SQL_updateUser = () => `UPDATE user SET ? WHERE id = ?`;
 
-//Delete User
-const SQL_deleteUser = () => `DELETE FROM user WHERE id = ?`;
-
 //Check if user already exists
 model.checkUser = userObj => {
   return new Promise((resolve, reject) => {

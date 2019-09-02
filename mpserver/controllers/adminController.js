@@ -112,7 +112,7 @@ controller.editUser = (req, res, _next) => {
     if (vToken.isAdmin) {
       model.userById(req.params.id).then(result => {
         if (result.length > 0 && req.body) {
-            const userId = result[0].id;
+          const userId = result[0].id;
           const objU = {
             ...(req.body.username && { username: req.body.username }),
             ...(req.body.email && { email: req.body.email }),
@@ -126,9 +126,11 @@ controller.editUser = (req, res, _next) => {
                 profile_id: req.body.profile_id
               }),
             ...(req.body.points && { points: req.body.points }),
-            ...(req.body.isbanned && { isbanned: +req.body.isbanned }),
-            ...(req.body.isadmin && { isadmin: +req.body.isadmin }),
-            id: userId
+            ...(req.body.isbanned > -1 && { isbanned: +req.body.isbanned }),
+            ...(req.body.isadmin > -1 && {
+              isadmin: +req.body.isadmin
+            }),
+            id: +userId
           };
 
           model

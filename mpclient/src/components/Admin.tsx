@@ -77,7 +77,7 @@ const Admin: React.FC<IPropsGlobal & RouteComponentProps> = props => {
           response.json().then((user: IUser) => {
             users[uId].isbanned = user.isbanned;
             saveUsers([...users]);
-            setCurrentPage(1)
+            setCurrentPage(1);
           });
         }
       });
@@ -102,6 +102,7 @@ const Admin: React.FC<IPropsGlobal & RouteComponentProps> = props => {
           response.json().then((user: IUser) => {
             users[uId].isadmin = user.isadmin
             saveUsers([...users]);
+            setCurrentPage(1);
           });
         }
       });
@@ -280,12 +281,16 @@ const Admin: React.FC<IPropsGlobal & RouteComponentProps> = props => {
                     className="is-subtitle has-text-light is-inline"
                     css={css`
                       margin-bottom: 0px !important;
-                      ${u.isbanned === 1
-                        ? "color:rgb(255,20,50) !important;"
-                        : ""}
                     `}
                   >
-                    <i>{u.username}</i>
+                    <Link
+                                        css={css`
+                                        ${u.isbanned === 1
+                                          ? "color:rgb(255,20,50) !important;"
+                                          : ""}
+                                      `}
+                                      className={`${!u.isbanned?'has-text-light':''}`}
+                    to={'/profile/' + u.id}>{u.username}</Link>
                   </h5>
                 </div>
                 <div className="column is-3">
