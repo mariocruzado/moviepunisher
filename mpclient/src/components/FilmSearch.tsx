@@ -138,6 +138,7 @@ const FilmSearch: React.FC<IPropsGlobal> = props => {
 
   //Default search 
   const resetSearch = () => {
+    setNoResults(false);
     props.saveQuery(defaultQuery);
   };
 

@@ -335,7 +335,7 @@ const UserEdit: React.FC<IPropsGlobal & RouteComponentProps<any>> = props => {
                   className="button is-dark is-small"
                   onClick={() => updateUser(decodedToken!.id)}
                 >
-                  Update!
+                  Update
                 </button>
               </div>
               <div className="control">

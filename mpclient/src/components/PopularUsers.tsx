@@ -43,18 +43,22 @@ const PopularUsers: React.FC<IPropsGlobal> = props => {
           >
             <thead>
               <tr css={css`font-size:0.75em;`}>
-                <th colSpan={5}>#Top Reviewers</th>
+                <th colSpan={3}>#Top Reviewers</th>
+                <th>Registration Date</th>
+                <th>Reviews</th>
               </tr>
             </thead>
             <tbody>
                 {users.map((u:IUser, n:number) => (
               <tr key={u.id} className={n > 2?'has-background-light':''}>
+                <td>{n+1}</td>
               <td className="has-text-centered" css={css`padding:20px`}>
                   <figure className="image is-32x32">
                   <img src={require(`../img/${u.profile_avatar}`)} />
                   </figure>
                   </td>
-              <td><Link to={`/profile/${u.id}`} className={n < 3?'has-text-weight-bold':''}>{u.username}</Link></td>
+              <td><Link to={`/profile/${u.id}`} className={n < 3?'has-text-weight-bold':''}>{u.username}</Link>
+              </td>
               <td>{dateFormat(u.regdate,false)}</td>
               <td>{u.reviews}</td>
             </tr>
