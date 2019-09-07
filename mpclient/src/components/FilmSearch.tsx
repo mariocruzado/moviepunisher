@@ -43,12 +43,12 @@ const FilmSearch: React.FC<IPropsGlobal> = props => {
 
   const [noResults, setNoResults] = React.useState(false);
   // const defaultQuery = `discover/movie?primary_release_date.gte=2019-06-04&primary_release_date.lte=${formatDate()}`;
-  const defaultQuery = 'discover/movie?sort_by=popularity.desc';
+  const defaultQuery = "discover/movie?sort_by=popularity.desc";
 
   //Get films by query
   const retrieveFilms = () => {
     saveFilms([]);
-    setHeader('');
+    setHeader("");
     fetch(`${apiUrl}${props.query}&${apiKey}&page=${currentPage}`, {
       method: "GET",
       headers: { "Content-Type": "application/json" }
@@ -136,7 +136,7 @@ const FilmSearch: React.FC<IPropsGlobal> = props => {
     }
   }, [calculateAvg]);
 
-  //Default search 
+  //Default search
   const resetSearch = () => {
     setNoResults(false);
     props.saveQuery(defaultQuery);
@@ -151,7 +151,7 @@ const FilmSearch: React.FC<IPropsGlobal> = props => {
             position: absolute;
             top: 10px;
             left: 15px;
-            z-index:200 !important;
+            z-index: 200 !important;
           `}
         >
           <Link to={"/"}>
@@ -164,7 +164,7 @@ const FilmSearch: React.FC<IPropsGlobal> = props => {
             background-color: rgb(60, 60, 60) !important;
             color: rgb(225, 222, 235) !important;
             border-radius: 0px !important;
-            padding:10px;
+            padding: 10px;
           `}
         >
           {!noResults && films.length <= 0 && (
@@ -173,19 +173,37 @@ const FilmSearch: React.FC<IPropsGlobal> = props => {
           {!noResults && <h5>{header}</h5>}
           {noResults && (
             <div>
-              <div css={css`display:flex !important;justify-content:center !important;`}>
+              <div
+                css={css`
+                  display: flex !important;
+                  justify-content: center !important;
+                `}
+              >
                 <figure className="image is-128x128">
-                  <img
-                    src={require("../img/notfound.svg")}
-                    alt="Sorry!"
-                  />
+                  <img src={require("../img/notfound.svg")} alt="Sorry!" />
                 </figure>
               </div>
-              <div className="container" css={css`margin-top:20px !important;`}>
-                <p className="is-size-7">Sorry! No results found for <span className="has-text-grey">{!props.query.split('query=')[1]?'...':props.query.split('query=')[1]}.</span></p>
-                <p className="is-size-7"><a onClick={resetSearch}>Click here</a> to see popular movies right now!</p>
+              <div
+                className="container"
+                css={css`
+                  margin-top: 20px !important;
+                `}
+              >
+                <p className="is-size-7">
+                  Sorry! No results found for{" "}
+                  <span className="has-text-grey">
+                    {!props.query.split("query=")[1]
+                      ? "..."
+                      : props.query.split("query=")[1]}
+                    .
+                  </span>
+                </p>
+                <p className="is-size-7">
+                  <a onClick={resetSearch}>Click here</a> to see popular movies
+                  right now!
+                </p>
               </div>
-              </div>
+            </div>
           )}
         </div>
         {films.length > 0 && (
@@ -233,18 +251,6 @@ const FilmSearch: React.FC<IPropsGlobal> = props => {
                                 ? f.average.toFixed(1)
                                 : "Not rated yet"}
                             </span>
-                            {/* {(() => {
-                            const result: any = [];
-                            for (let j = 0; j < parseInt(f.average); j++) {
-                              result.push(
-                                <i
-                                  className="fas fa-star"
-                                  key={f.original_title + "star" + j}
-                                />
-                              );
-                            }
-                            return result;
-                          })()} */}
                           </div>
                           <div className="col2">
                             <ul className="movie-likes">

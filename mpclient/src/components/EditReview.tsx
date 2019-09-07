@@ -6,6 +6,8 @@ import { IGlobalState } from "../reducers/global";
 /** @jsx jsx */
 import { css, jsx } from "@emotion/core";
 import { RouteComponentProps, Link } from "react-router-dom";
+
+//Own scripts
 import {
   reviewContentChecker,
   reviewTitleChecker
@@ -15,15 +17,24 @@ interface IPropsGlobal {
   token: string;
 }
 
-const EditReview: React.FC<IPropsGlobal & any> = props => {
+interface OwnProps {
+  review_id: number;
+  rlist: any[];
+
+  close_edit: () => void;
+}
+
+const EditReview: React.FC<IPropsGlobal & OwnProps> = props => {
   const [reviewData, saveReviewData] = React.useState<any>({});
 
+  //States for form controls
   const [reviewTitle, setReviewTitle] = React.useState("");
   const [reviewContent, setReviewContent] = React.useState("");
   const [rating, setRating] = React.useState();
 
   const [label, setLabel] = React.useState(false);
 
+  //Form updaters
   const updateReviewTitle = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (
       !(event.currentTarget.value.charAt(0) === " ") &&
@@ -49,28 +60,22 @@ const EditReview: React.FC<IPropsGlobal & any> = props => {
     setRating(event.currentTarget.value);
   };
 
+  //Get data by review id searching in reviews array (Fetch not needed)
   const getReviewData = (reviewid: number) => {
-    fetch("http://localhost:8080/api/reviews/" + reviewid, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + props.token
-      }
-    }).then(response => {
-      if (response.ok)
-        response.json().then((review: any) => {
-          saveReviewData(review);
-          setRating(review.rating);
-          setReviewContent(review.content);
-          setReviewTitle(review.title);
-        });
-    });
+    const indexReview = props.rlist.find((r: any) => r.id === reviewid);
+    saveReviewData(indexReview);
+    setRating(indexReview.rating);
+    setReviewContent(indexReview.content);
+    setReviewTitle(indexReview.title);
   };
+
+  //Function to update review array
   const updateReviewArray = (reviewid: number, nReview: any) => {
     const rToChange = props.rlist.findIndex((r: any) => r.id === reviewid);
     props.rlist[rToChange] = nReview;
   };
 
+  //Field checker to enable button
   const reviewFieldChecker = () => {
     let res = false;
     if (reviewContentChecker(reviewContent) && reviewTitleChecker(reviewTitle))
@@ -78,6 +83,7 @@ const EditReview: React.FC<IPropsGlobal & any> = props => {
     return res;
   };
 
+  //Updating the review (Button onclick function)
   const updateReview = (reviewid: number) => {
     if (reviewFieldChecker()) {
       fetch("http://localhost:8080/api/reviews/" + reviewid, {
@@ -102,8 +108,10 @@ const EditReview: React.FC<IPropsGlobal & any> = props => {
     }
   };
 
+  //Get data to fill the form
   React.useEffect(() => getReviewData(props.review_id), [props.review_id]);
 
+  //Rendering
   return (
     <div className="box">
       <div className="control field">
@@ -178,6 +186,7 @@ const EditReview: React.FC<IPropsGlobal & any> = props => {
   );
 };
 
+//Redux
 const mapStateToProps = (globalState: IGlobalState) => ({
   token: globalState.token
 });

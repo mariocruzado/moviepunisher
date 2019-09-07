@@ -14,6 +14,7 @@ import { Link } from 'react-router-dom';
 interface IPropsGlobal {
   token: string;
 }
+
 const Comments: React.FC<IPropsGlobal & any> = props => {
   const [comments, saveComments] = React.useState<any>([]);
   const [displayComments, setDisplayComments] = React.useState(false);
@@ -21,6 +22,7 @@ const Comments: React.FC<IPropsGlobal & any> = props => {
   const [comment, setComment] = React.useState("");
   const [label, setLabel] = React.useState(false);
 
+  //Input updater
   const updateComment = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     if (
       !(event.currentTarget.value.charAt(0) === " ") &&
@@ -90,13 +92,13 @@ const Comments: React.FC<IPropsGlobal & any> = props => {
     });
   };
 
+  //Add comment
   const addComment = (review_id: number, content: string) => {
     if (commentChecker(content) && decodedToken && review_id) {
       const comment = {
         user_id: decodedToken!.id,
         comment: content
       };
-      console.log(props.token);
       fetch(`http://localhost:8080/api/comments/new/${review_id}`, {
         method: "POST",
         headers: {
@@ -118,8 +120,10 @@ const Comments: React.FC<IPropsGlobal & any> = props => {
     }
   };
 
+  //When user review changes, we retrieve comments for it
   React.useEffect(() => retrieveComments(props.review_id), []);
 
+  //Render
   return (
     <div>
       {!displayComments && (

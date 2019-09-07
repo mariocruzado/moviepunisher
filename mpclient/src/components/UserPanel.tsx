@@ -21,7 +21,7 @@ const UserPanel: React.FC<
       `}
       className="container"
     >
-      <UserDetails user_id={props.match.params.user_id}></UserDetails>
+      <UserDetails user_id={props.match.params.user_id} />
       <UserReviews user_id={props.match.params.user_id} />
     </div>
   );

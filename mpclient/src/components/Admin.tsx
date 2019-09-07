@@ -6,24 +6,29 @@ import { IGlobalState } from "../reducers/global";
 /** @jsx jsx */
 import { css, jsx } from "@emotion/core";
 
-//Jquery
 import $ from "jquery";
 
 import { IUser } from "../interfaces";
+
+//Own scripts
 import { paginate } from "../tools/pagination";
 import { dateFormat } from "../tools/dateFormats";
+
 import { Link, RouteComponentProps } from "react-router-dom";
 import jwt from "jsonwebtoken";
 
 interface IPropsGlobal {
   token: string;
 }
+
 const Admin: React.FC<IPropsGlobal & RouteComponentProps> = props => {
+  //Components states for pagination & store users
   const [users, saveUsers] = React.useState<IUser[]>([]);
   const [currentPage, setCurrentPage] = React.useState<number>(1);
   const [totalPages, setTotalPages] = React.useState<number>(1);
   const [userSelected, setUserSelected] = React.useState<number>(-1);
 
+  //Decoded token
   const decodedToken = React.useMemo(() => {
     const dToken = jwt.decode(props.token);
     if (dToken !== null && typeof dToken !== "string") {
@@ -40,6 +45,7 @@ const Admin: React.FC<IPropsGlobal & RouteComponentProps> = props => {
     if (currentPage > 1) setCurrentPage(p => p - 1);
   };
 
+  //Get userlist from local API
   const retrieveUsers = () => {
     if (decodedToken!.isAdmin) {
       fetch("http://localhost:8080/api/admin/list", {
@@ -51,6 +57,7 @@ const Admin: React.FC<IPropsGlobal & RouteComponentProps> = props => {
       }).then(response => {
         if (response.ok) {
           response.json().then((users: IUser[]) => {
+            //If we have response, we will store users in our state and total pages
             saveUsers(users);
             const totp = Math.ceil(users.length / 10);
             setTotalPages(totp);
@@ -60,8 +67,10 @@ const Admin: React.FC<IPropsGlobal & RouteComponentProps> = props => {
     } else props.history.push("/");
   };
 
+  //Ban controls
   const banUser = (userid: number) => {
     if (decodedToken!.isAdmin) {
+      //We find which position of the array contains selected user
       const uId = users.findIndex((u: IUser) => u.id === userid);
       fetch("http://localhost:8080/api/admin/edit/" + userid, {
         method: "PUT",
@@ -75,6 +84,7 @@ const Admin: React.FC<IPropsGlobal & RouteComponentProps> = props => {
       }).then(response => {
         if (response.ok) {
           response.json().then((user: IUser) => {
+            //Applying changes in selected user
             users[uId].isbanned = user.isbanned;
             saveUsers([...users]);
             setCurrentPage(1);
@@ -84,9 +94,10 @@ const Admin: React.FC<IPropsGlobal & RouteComponentProps> = props => {
     } else props.history.push("/");
   };
 
-  //Make admin
+  //Admin controls
   const admUser = (userid: number) => {
     if (decodedToken!.isAdmin) {
+      //We find which position of the array contains selected user
       const uId = users.findIndex((u: IUser) => u.id === userid);
       fetch("http://localhost:8080/api/admin/edit/" + userid, {
         method: "PUT",
@@ -101,6 +112,7 @@ const Admin: React.FC<IPropsGlobal & RouteComponentProps> = props => {
       }).then(response => {
         if (response.ok) {
           response.json().then((user: IUser) => {
+            //Applying changes in selected user
             users[uId].isadmin = user.isadmin;
             saveUsers([...users]);
             setCurrentPage(1);
@@ -122,6 +134,7 @@ const Admin: React.FC<IPropsGlobal & RouteComponentProps> = props => {
       if (response.ok)
         response.json().then((_response: any) => {
           const uIndx = users.findIndex((u: IUser) => u.id === userid);
+          // If user exists in users array, we remove it
           if (uIndx !== -1) users.splice(uIndx, 1);
           saveUsers([...users]);
         });
@@ -129,6 +142,7 @@ const Admin: React.FC<IPropsGlobal & RouteComponentProps> = props => {
   };
 
   const orderByBanned = (array: IUser[]) => {
+    //Alphabetical sorting
     array.sort(function(a, b) {
       if (a.username < b.username) {
         return -1;
@@ -138,10 +152,12 @@ const Admin: React.FC<IPropsGlobal & RouteComponentProps> = props => {
       }
       return 0;
     });
+    //Putting Banned users on the top & admins next
     array.sort((a: any, b: any) => b.isadmin - a.isadmin);
     array.sort((a: any, b: any) => b.isbanned - a.isbanned);
   };
-  //Get users from api
+
+  //Getting users when component mounts
   React.useEffect(retrieveUsers, []);
 
   //Modal controls
@@ -159,10 +175,13 @@ const Admin: React.FC<IPropsGlobal & RouteComponentProps> = props => {
     $(".modal").addClass("is-active");
     setUserSelected(userid);
   };
+
   if (!users) return null;
 
-  //Sort by banned users first
+  //Sorting array
   orderByBanned(users);
+
+  //Rendering
   return (
     <div>
       {/* Modal delete user */}
@@ -282,18 +301,29 @@ const Admin: React.FC<IPropsGlobal & RouteComponentProps> = props => {
                   </div>
                   <div className="column is-1">
                     <div>
-                        {u.isadmin === 1 && (
-                          <figure className="image is-16x16">
-                          <img src={require('../img/ico/admin.svg')} css={css`filter:invert(100%) !important;margin-top:6px`}/>
-                          </figure>
-                        )}
+                      {u.isadmin === 1 && (
+                        <figure className="image is-16x16">
+                          <img
+                            src={require("../img/ico/admin.svg")}
+                            css={css`
+                              filter: invert(100%) !important;
+                              margin-top: 6px;
+                            `}
+                          />
+                        </figure>
+                      )}
                     </div>
                     <div>
-                    {u.isbanned === 1 && (
-                          <figure className="image is-16x16">
-                          <img src={require('../img/ico/ban.svg')} css={css`margin-top:6px`}/>
-                          </figure>
-                        )}
+                      {u.isbanned === 1 && (
+                        <figure className="image is-16x16">
+                          <img
+                            src={require("../img/ico/ban.svg")}
+                            css={css`
+                              margin-top: 6px;
+                            `}
+                          />
+                        </figure>
+                      )}
                     </div>
                   </div>
                   <div className="column is-2">
@@ -333,34 +363,44 @@ const Admin: React.FC<IPropsGlobal & RouteComponentProps> = props => {
                         margin: 5px;
                       `}
                     >
-                        <div className="buttons">
-                          <button
-                            onClick={() => banUser(u.id)}
-                            className={`button is-rounded is-small ${
-                              u.isbanned === 1 ? "is-link" : "is-warning"
-                            }`}
-                            disabled={u.isadmin ? true : false}
-                          >
-                            {u.isbanned === 1 ? "Unban" : "Ban"}
-                          </button>
-                          <button
-                            onClick={() => admUser(u.id)}
-                            className={`button ${
-                              u.isbanned === 1 ? "is-dark" : "is-success"
-                            } is-rounded is-small is-outlined`}
-                            css={css`${u.id === decodedToken!.id?'color:white !important;border:0px !important':''}`}
-                            disabled={u.isbanned === 1 || u.id === decodedToken!.id ? true : false}
-                          >
-                            {!u.isadmin || decodedToken!.id === u.id?'Admin':'User'}
-                          </button>
-                          <button
-                            onClick={() => deleteModal(u.id)}
-                            className="button is-danger is-rounded is-small is-outlined"
-                            disabled={u.isadmin? true:false}
-                          >
-                            Delete
-                          </button>
-                        </div>
+                      <div className="buttons">
+                        <button
+                          onClick={() => banUser(u.id)}
+                          className={`button is-rounded is-small ${
+                            u.isbanned === 1 ? "is-link" : "is-warning"
+                          }`}
+                          disabled={u.isadmin ? true : false}
+                        >
+                          {u.isbanned === 1 ? "Unban" : "Ban"}
+                        </button>
+                        <button
+                          onClick={() => admUser(u.id)}
+                          className={`button ${
+                            u.isbanned === 1 ? "is-dark" : "is-success"
+                          } is-rounded is-small is-outlined`}
+                          css={css`
+                            ${u.id === decodedToken!.id
+                              ? "color:white !important;border:0px !important"
+                              : ""}
+                          `}
+                          disabled={
+                            u.isbanned === 1 || u.id === decodedToken!.id
+                              ? true
+                              : false
+                          }
+                        >
+                          {!u.isadmin || decodedToken!.id === u.id
+                            ? "Admin"
+                            : "User"}
+                        </button>
+                        <button
+                          onClick={() => deleteModal(u.id)}
+                          className="button is-danger is-rounded is-small is-outlined"
+                          disabled={u.isadmin ? true : false}
+                        >
+                          Delete
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -454,9 +494,12 @@ const Admin: React.FC<IPropsGlobal & RouteComponentProps> = props => {
   );
 };
 
+//Redux States
 const mapStateToProps = (globalState: IGlobalState) => ({
   token: globalState.token
 });
+
+//Export
 export default connect(
   mapStateToProps,
   null

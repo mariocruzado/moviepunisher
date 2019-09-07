@@ -64,6 +64,8 @@ const UserReviews: React.FC<IPropsGlobal & any> = props => {
       }
     });
   };
+
+  //Pagination controls
   const nextPage = () => {
     if (currentPage < totalPages) setCurrentPage(p => p + 1);
   };
@@ -95,7 +97,7 @@ const UserReviews: React.FC<IPropsGlobal & any> = props => {
         </ul>
         { decodedToken!.id === +props.user_id && (
             <div css={css`margin:10px !important;`}>
-              <Link className="button is-light is-small" to={'/update'}><i className="fas fa-edit"></i>{' Edit my profile'}</Link>
+              <Link className="button is-light is-small" to={'/update'}><i className="fas fa-edit"></i>{' Edit profile'}</Link>
             </div>
           )}
       </div>

@@ -249,7 +249,7 @@ const FilmReviews: React.FC<IPropsGlobal & { film_id: number }> = props => {
           rlist={reviews}
         />
       )}
-      {!displayEdit && (
+      {!displayEdit && props.actualFilm.id > 0 && (
         <div
           className="box reviews"
           css={css`

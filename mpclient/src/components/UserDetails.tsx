@@ -7,7 +7,7 @@ import { IUser } from "../interfaces";
 import { connect } from "react-redux";
 import jwt from "jsonwebtoken";
 import { dateFormat } from "../tools/dateFormats";
-import { RouteComponentProps, Link } from 'react-router-dom';
+import { RouteComponentProps, Link } from "react-router-dom";
 
 interface IPropsGlobal {
   token: string;
@@ -49,8 +49,8 @@ const UserDetails: React.FC<IPropsGlobal & { user_id: number }> = props => {
       className="box has-text-light"
       css={css`
         margin: 10px auto !important;
-        padding:50px;
-        background-color:rgb(34,34,34);
+        padding: 50px;
+        background-color: rgb(34, 34, 34);
       `}
     >
       <div className="columns">
@@ -73,12 +73,19 @@ const UserDetails: React.FC<IPropsGlobal & { user_id: number }> = props => {
                 box-shadow: 5px 5px 10px rgb(0, 0, 0);
               `}
             >
-              
               <img src={require("../img/" + user.profile_avatar)} />
             </figure>
           </div>
         </div>
-        <div className="column is-5 has-background-dark" css={css`border-radius:10px;padding:25px;border:1px solid black;box-shadow:5px 5px 10px black;`}>
+        <div
+          className="column is-5 has-background-dark"
+          css={css`
+            border-radius: 10px;
+            padding: 25px;
+            border: 1px solid black;
+            box-shadow: 5px 5px 10px black;
+          `}
+        >
           <div className="columns">
             <div className="column is-5">
               <span
@@ -92,13 +99,13 @@ const UserDetails: React.FC<IPropsGlobal & { user_id: number }> = props => {
             <div className="column is-7">
               <span className="is-italic"> {user.username}</span>
               {user.isadmin != 0 && (
-                          <i
-                            className="fas fa-shield-alt has-text-link"
-                            css={css`
-                              margin-left: 5px;
-                            `}
-                          />
-                        )}
+                <i
+                  className="fas fa-shield-alt has-text-link"
+                  css={css`
+                    margin-left: 5px;
+                  `}
+                />
+              )}
             </div>
           </div>
           <div className="columns">
@@ -126,20 +133,22 @@ const UserDetails: React.FC<IPropsGlobal & { user_id: number }> = props => {
               </span>
             </div>
             <div className="column is-7">
-              <span className="is-italic">{dateFormat(user.regdate,true)}</span>
+              <span className="is-italic">
+                {dateFormat(user.regdate, true)}
+              </span>
             </div>
           </div>
         </div>
-        
+
         <div className="column is-5">
           <div className="columns">
-          <div className="column is-one-fifth has-text-right">
+            <div className="column is-one-fifth has-text-right"></div>
+            <div className="column">
+              <p className="is-italic has-text-grey-light">
+                {user.description ? user.description : "No user description..."}
+              </p>
+            </div>
           </div>
-          <div className="column">
-            <p className="is-italic has-text-grey-light">{user.description?user.description:'No user description...'}</p>
-          </div>
-          </div>
-          
         </div>
       </div>
     </div>

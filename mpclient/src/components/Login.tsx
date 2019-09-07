@@ -93,7 +93,7 @@ const Login: React.FC<IPropsGlobal> = props => {
           else if (response.status === 403)
           setLabel("* You have been banned from our community!");
       })
-      .catch(e => console.log("Angel " + e));
+      .catch(e => console.log(e));
   };
 
   //To set enter key function without submit default

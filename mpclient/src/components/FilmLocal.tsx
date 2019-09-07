@@ -23,6 +23,7 @@ const FilmLocal: React.FC<IPropsGlobal> = props => {
   const [calculateAvg, setCalculateAvg] = React.useState<boolean>(false);
   const [ready, setReady] = React.useState(false);
 
+  //Input controls
   const updateItemsPerPage = (event: React.ChangeEvent<any>) => {
     const newpages = Math.ceil(
       props.storedFilms.length / +event.currentTarget.value
@@ -50,6 +51,7 @@ const FilmLocal: React.FC<IPropsGlobal> = props => {
     });
   };
 
+  //Sorting
   const sortFilms = (array: IFilm[], option: number, order: number) => {
     array.sort(function(a, b) {
       if (a.original_title < b.original_title) {
@@ -80,6 +82,7 @@ const FilmLocal: React.FC<IPropsGlobal> = props => {
     }
   };
 
+  //Establishing average rating of films & number of reviews
   const getAvgReviews = (idsarray: any[]) => {
     fetch("http://localhost:8080/api/reviews/film/avg/", {
       method: "POST",
@@ -101,13 +104,12 @@ const FilmLocal: React.FC<IPropsGlobal> = props => {
           props.saveLastFilms([...films]);
           setReady(true);
         });
-      } else {
-        console.log("not ok");
       }
     });
     return null;
   };
 
+  //Getting all films from our database
   const retrieveLocalFilms = () => {
     fetch("http://localhost:8080/api/films/", {
       method: "GET",
@@ -130,6 +132,8 @@ const FilmLocal: React.FC<IPropsGlobal> = props => {
       }
     });
   };
+
+  //Retrieving filmlist when array length changes
   React.useEffect(() => retrieveLocalFilms(), [props.storedFilms.length]);
   React.useEffect(() => {
     if (calculateAvg && props.storedFilms.length > 0) {
@@ -139,6 +143,7 @@ const FilmLocal: React.FC<IPropsGlobal> = props => {
     }
   }, [calculateAvg]);
 
+  //Pagination controls
   const nextPage = () => {
     if (props.pageInfo.current < props.pageInfo.total) {
       props.setPages({
@@ -163,12 +168,14 @@ const FilmLocal: React.FC<IPropsGlobal> = props => {
     });
   };
 
+  //Sort films when component renders
   sortFilms(
     props.storedFilms,
     props.pageInfo.sortMode,
     props.pageInfo.sortOrder
   );
 
+  //Render
   if (!ready) return null;
   return (
     <div>
@@ -321,7 +328,7 @@ const FilmLocal: React.FC<IPropsGlobal> = props => {
           </div>
         </div>
       )}
-<div></div>
+      <div></div>
       <div
         css={css`
           margin-top: 50px;
@@ -347,9 +354,7 @@ const FilmLocal: React.FC<IPropsGlobal> = props => {
                           className="movie-img"
                           src={
                             f.poster_path
-                              ? `https://image.tmdb.org/t/p/w400/${
-                                  f.poster_path
-                                }`
+                              ? `https://image.tmdb.org/t/p/w400/${f.poster_path}`
                               : unavailableimg
                           }
                         />
@@ -413,6 +418,7 @@ const FilmLocal: React.FC<IPropsGlobal> = props => {
   );
 };
 
+//Redux states
 const mapStateToProps = (globalState: IGlobalState) => ({
   storedFilms: globalState.storedFilms,
   token: globalState.token,
@@ -423,6 +429,7 @@ const mapDispatchToProps = {
   saveLastFilms: actions.saveLastFilms,
   setPages: actions.savePages
 };
+
 export default connect(
   mapStateToProps,
   mapDispatchToProps

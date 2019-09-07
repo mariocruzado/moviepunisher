@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import { IFilm } from "../interfaces";
 import { IGlobalState } from "../reducers/global";
 import jwt from "jsonwebtoken";
-import unavailableimg from "../img/unavailable.gif"
+import unavailableimg from "../img/unavailable.gif";
 
 import * as actions from "../actions";
 
@@ -20,52 +20,64 @@ interface IPropsGlobal {
   saveFilm: (film: IFilm) => void;
 }
 const FilmDetails: React.FC<IPropsGlobal & any> = props => {
-  // const [film, setFilm] = React.useState<IFilm | null>(null);
+
   const [ready, setReady] = React.useState(false);
-  //   const filmIndex = React.useMemo(() => {
-  //     console.log(props.films);
-  //     return props.films.findIndex((f: IFilm) => f.id == props.film_id);
-  //   }, [props.film_id, props.films]);
+  const [msg, setMsg] = React.useState("");
 
-  //   React.useMemo(() => setFilm(props.films[filmIndex]), [
-  //     props.films,
-  //     filmIndex
-  //   ]);
-
+  //Retreiving film data from THEMOVIEDB API
   const getFilmData = (filmid: number) => {
     const apiUrl = `http://api.themoviedb.org/3/movie/${filmid}?`;
     const apiKey = "api_key=51c725de6ddb9024213b00473cda137b";
     fetch(`${apiUrl}&${apiKey}`, {
       method: "GET",
       headers: { "Content-Type": "application/json" }
-    }).then(response => {
-      if (response.ok) {
-        response.json().then((film: IFilm) => {
-          props.saveFilm(film);
-          setReady(true);
-        });
-      }
-    });
+    })
+      .then(response => {
+        if (response.ok) {
+          response.json().then((film: IFilm) => {
+            props.saveFilm(film);
+            setReady(true);
+            setMsg("");
+          });
+        } else {
+          setMsg("Cannot retrieve film info/Film doesn't exist");
+          setReady(false);
+        }
+      })
+      .catch(err => {
+        setMsg("Error connecting to server");
+        setReady(false);
+      });
   };
 
   React.useEffect(() => getFilmData(props.film_id), [props.film_id]);
 
   const headerImg = "https://image.tmdb.org/t/p/original/";
 
-  if (!ready) return null;
-  return (
-    <div>
-      {/* {film.backdrop_path && (
-        <div className="card-image">
-          <figure className="image is-16by9">
-            <img
-              src={`${headerImg}${film.backdrop_path}`}
-              alt={film.original_title}
-            />
-          </figure>
+  if (!ready) {
+    if (msg.length > 1 || props.film_id.length > 12) {
+      return (
+        <div>
+          <div
+            css={css`
+              display: flex !important;
+              justify-content: center !important;
+              filter:grayscale(100%);
+            `}
+          >
+              <img src={require("../img/404.jpg")} alt="Sorry!" css={css`margin-bottom: 30px !important;`}/>
+          </div>
         </div>
-      )} */}
-
+      );
+    } else {
+      return (
+        <div className="card-content has-text-centered">
+          <a className="button is-dark is-large is-loading">Loading</a>
+        </div>
+      );
+    }
+  } else return (
+    <div>
       <div className="card-content">
         {/* new card */}
         <a href={props.actualFilm.homepage} target="_blank">
@@ -76,9 +88,7 @@ const FilmDetails: React.FC<IPropsGlobal & any> = props => {
                   className="locandina"
                   src={
                     props.actualFilm.poster_path
-                      ? `https://image.tmdb.org/t/p/w400/${
-                          props.actualFilm.poster_path
-                        }`
+                      ? `https://image.tmdb.org/t/p/w400/${props.actualFilm.poster_path}`
                       : unavailableimg
                   }
                 />
@@ -95,7 +105,7 @@ const FilmDetails: React.FC<IPropsGlobal & any> = props => {
                     margin: 10px 0px 10px 0px;
                   `}
                 >
-                  {props.actualFilm.genres.map((g: any) => (
+                  {props.actualFilm.genres.slice(0,4).map((g: any) => (
                     <span
                       css={css`
                         margin: 0px 0px 0px 3px;
@@ -142,89 +152,6 @@ const FilmDetails: React.FC<IPropsGlobal & any> = props => {
             )}
           </div>
         </a>
-        {/* Old card */}
-        {/* <div className="media">
-          <div className="media-content">
-            <div className="columns">
-              <div className="column is-4 is-mobile is-centered">
-                <figure
-                  className="image"
-                  css={css`
-                    max-width: 200px !important;
-                  `}
-                >
-                  <img
-                    src={`https://image.tmdb.org/t/p/w200/${props.actualFilm.poster_path}`}
-                    alt="Placeholder image"
-                  />
-                </figure>
-              </div>
-              <div
-                className="column is-8 is-mobile"
-                css={css`
-                  border-radius: 5px;
-                `}
-              >
-                <div>
-                  <span className="title is-4 is-block">
-                    {props.actualFilm.original_title} ({props.actualFilm.release_date.split("-")[0]})
-                  </span>
-                  <span className="subtitle is-size-6 is-block">
-                    <i>{props.actualFilm.tagline}</i>
-                  </span>
-                </div>
-                <div className="is-block">
-                  {props.actualFilm.genres.map((g: any) => (
-                    <span
-                      css={css`
-                        margin-right: 5px;
-                        padding: 5px;
-                        border-radius: 10px;
-                        font-size: 0.7em !important;
-                      `}
-                      className="has-background-success has-text-white"
-                      key={g.id}
-                    >
-                      {g.name}
-                    </span>
-                  ))}
-                </div>
-
-                <div className="columns">
-                  <div className="column">
-                    <p className="subtitle is-6">Release Date:</p>
-                  </div>
-                  <div className="column">
-                    <p className="subtitle is-6">{props.actualFilm.release_date}</p>
-                  </div>
-                </div>
-                <div className="columns">
-                  <div className="column">
-                    <p className="subtitle is-6">Languages:</p>
-                  </div>
-                  <div className="column">
-                    <p className="subtitle is-6">
-                      {props.actualFilm.spoken_languages.map((sl: any, j: number) => (
-                        <span key={`${sl.name}${j}`}>{sl.name} </span>
-                      ))}
-                    </p>
-                  </div>
-                </div>
-                <div className="columns">
-                  <div className="column">
-                    <p className="subtitle is-6">Country:</p>
-                  </div>
-                  <div className="column">
-                    <p className="subtitle is-6">
-                      {props.actualFilm.original_language.toUpperCase()}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="media-left">{props.actualFilm.overview}</div> */}
       </div>
     </div>
   );
