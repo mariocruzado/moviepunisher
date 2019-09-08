@@ -123,7 +123,7 @@ const Login: React.FC<IPropsGlobal> = props => {
             <div className="control has-icons-left">
               <input
                 type="text"
-                placeholder="username123"
+                placeholder="Enter Your Username"
                 className={`input is-rounded ${usernameChecker(user) ? "is-success" : ""}`}
                 onChange={updateUser}
                 value={user}

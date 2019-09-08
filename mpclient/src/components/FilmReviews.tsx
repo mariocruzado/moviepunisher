@@ -136,6 +136,7 @@ const FilmReviews: React.FC<IPropsGlobal & { film_id: number }> = props => {
     });
   };
 
+  //Remove film when reviews is empty
   const removeFilm = (filmid: number) => {
     fetch(`http://localhost:8080/api/films/${filmid}`, {
       method: "DELETE",

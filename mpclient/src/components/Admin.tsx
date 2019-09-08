@@ -250,6 +250,7 @@ const Admin: React.FC<IPropsGlobal & RouteComponentProps> = props => {
               </div>
             </div>
           )}
+          
           {paginate(users, currentPage, 10).map((u: IUser) => (
             <div
               className={`card ${
